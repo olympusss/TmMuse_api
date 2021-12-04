@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+fastapi-socketio
+python-jose
+cryptography
+PyJWT
+bcrypt
+datetime
+psycopg2
