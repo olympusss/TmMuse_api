@@ -1,11 +1,20 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import desc, and_
 from models import (
-    Users, CodeVerify, InterestItems, Interests, AddUserInterest, UserInterests
+    Users, CodeVerify, InterestItems, Interests, AddUserInterest, UserInterests,
+    Banners, Categories, PhoneNumbers, PromotionStatuses, Images, Profiles
 )
 from tokens import create_access_token
 
 def read_all_users(db: Session):
-    result = db.query(Users).all()
+    result = db.query(
+        Users.id,
+        Users.fullname,
+        Users.phone_number,
+        Users.token,
+        Users.created_at,
+        Users.updated_at
+    ).all()
     return result
 
 def read_user_by_phone_number(db: Session, phone_number: str):
@@ -70,3 +79,47 @@ def delete_user_interest(db: Session, user_id):
         return True
     else:
         return False
+    
+def read_banner(db: Session):
+    result = db.query(
+        Banners.id,
+        Banners.image,
+        Banners.order,
+        Banners.link,
+        Banners.profile_id
+    ).all()
+    return result
+
+def read_movies(db: Session):
+    result = db.query(
+        Profiles.nameTM,
+        Profiles.nameRU,
+        Profiles.short_descTM,
+        Profiles.short_descRU,
+        Images.small_image
+    ).join(Images, and_(Images.profile_id == Profiles.id, Images.isVR == False)).\
+        filter(Profiles.category_id == 2).\
+            order_by(desc(Profiles.updated_at)).\
+                limit(20).all()
+    return result
+
+def read_promotions(db: Session):
+    result = db.query(
+        PromotionStatuses.id,
+        PromotionStatuses.promotion_status,
+        Profiles.id,
+        Profiles.nameTM,
+        Profiles.nameRU,
+        Profiles.short_descTM,
+        Profiles.short_descRU,
+        Profiles.instagram,
+        Profiles.site,
+        Profiles.like,
+        Profiles.dislike,
+        Images.small_image,
+        Images.large_image,
+        PhoneNumbers.phone_number
+    ).join(Profiles, Profiles.id == PromotionStatuses.profile_id).\
+        join(Images, and_(Images.profile_id == Profiles.id, Images.isVR == False)).\
+            join(PhoneNumbers, PhoneNumbers.profile_id == Profiles.id).\
+                order_by(desc(PromotionStatuses.updated_at)).all()

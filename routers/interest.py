@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from db import get_db
 from models import AddUserInterest
 import crud
-from models.models import UserInterests
 from tokens import Returns, check_token, token
 
 interest_router = APIRouter()

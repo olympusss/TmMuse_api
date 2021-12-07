@@ -12,8 +12,7 @@ class Users(Base):
     notif_token        = Column(Integer)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    
-    users_userinterests    = relationship("UserInterests")
+    users_userinterests = relationship("UserInterests", back_populates="userinterests_users")
     
     
 class Interests(Base):
@@ -32,8 +31,7 @@ class InterestItems(Base):
     interest_id        = Column(Integer)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    
-    interestitems_userinterests     = relationship("UserInterests")
+    interestitems_userinterests = relationship("UserInterests", back_populates="userinterests_interestitems")
     
     
 class UserInterests(Base):
@@ -43,6 +41,10 @@ class UserInterests(Base):
     user_id            = Column(Integer, ForeignKey("users.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
+    userinterests_users         = relationship("Users", back_populates="users_userinterests")
+    userinterests_interestitems = relationship("InterestItems", back_populates="interestitems_userinterests")
+    
+    
     
     
 class Banners(Base):
@@ -54,6 +56,8 @@ class Banners(Base):
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
+    banners_profiles   = relationship("Profiles" , back_populates="profiles_banners")
+    
     
 class Categories(Base):
     __tablename__      = "categories"
@@ -61,8 +65,7 @@ class Categories(Base):
     name               = Column(String)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    
-    categories_profiles = relationship("Profiles")
+    categories_profiles = relationship("Profiles", back_populates="profiles_categories")
 
 class PhoneNumbers(Base):
     __tablename__      = "phone_numbers"
@@ -71,6 +74,8 @@ class PhoneNumbers(Base):
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
+    phonenumbers_profiles = relationship("Profiles", back_populates="profiles_phonenumbers")
+    
     
 class PromotionStatuses(Base):
     __tablename__      = "promotion_statuses"
@@ -79,6 +84,8 @@ class PromotionStatuses(Base):
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
+    promotionstatuses_profiles = relationship("Profiles", back_populates="profiles_promotionstatuses")
+    
     
 class Images(Base):
     __tablename__      = "images"
@@ -89,6 +96,8 @@ class Images(Base):
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
+    images_profiles    = relationship("Profiles", back_populates="profiles_images")
+    
     
 class Profiles(Base):
     __tablename__      = "profiles"
@@ -127,7 +136,8 @@ class Profiles(Base):
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     
-    profiles_images            = relationship("Images")
-    profiles_promotionstatuses = relationship("PromotionStatuses")
-    profiles_phonenumber       = relationship("PhoneNumbers")
-    profiles_banners           = relationship("Banners")
+    profiles_images            = relationship("Images"              , back_populates="images_profiles")
+    profiles_promotionstatuses = relationship("PromotionStatuses"   , back_populates="promotionstatuses_profiles")
+    profiles_phonenumbers      = relationship("PhoneNumbers"        , back_populates="phonenumbers_profiles")
+    profiles_banners           = relationship("Banners"             , back_populates="banners_profiles")
+    profiles_categories        = relationship("Categories"          , back_populates="categories_profiles")
