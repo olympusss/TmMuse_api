@@ -9,6 +9,8 @@ from models.models import PhoneNumbers
 from models.models import PromotionStatuses
 from models.models import Images
 from models.models import Profiles
+from models.models import Ads
+from models.models import JoinCategoryAds
 
 
 from models.schemas import PhoneVerify

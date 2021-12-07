@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, and_
+from sqlalchemy.sql.expression import true
 from models import (
     Users, CodeVerify, InterestItems, Interests, AddUserInterest, UserInterests,
-    Banners, Categories, PhoneNumbers, PromotionStatuses, Images, Profiles
+    Banners, Categories, PhoneNumbers, PromotionStatuses, Images, Profiles,
+    Ads, JoinCategoryAds
 )
 from tokens import create_access_token
 
@@ -123,3 +125,23 @@ def read_promotions(db: Session):
         join(Images, and_(Images.profile_id == Profiles.id, Images.isVR == False)).\
             join(PhoneNumbers, PhoneNumbers.profile_id == Profiles.id).\
                 order_by(desc(PromotionStatuses.updated_at)).all()
+    return result
+                
+def read_ads(db: Session):
+    result = db.query(
+        Ads.id,
+        Ads.name,
+        Ads.comment_of_admin,
+        Ads.image,
+        Ads.profile_id,
+        Ads.is_main
+    ).filter(Ads.is_main == True).all()
+    return result
+
+def read_categories_by_ads(db: Session, ads_id):
+    result = db.query(
+        Categories.name
+    ).join(JoinCategoryAds, and_(JoinCategoryAds.category_id == Categories.id, JoinCategoryAds.ads_id == ads_id)).\
+        all()
+    return result
+    

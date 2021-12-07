@@ -65,7 +65,9 @@ class Categories(Base):
     name               = Column(String)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    categories_profiles = relationship("Profiles", back_populates="profiles_categories")
+    categories_profiles        = relationship("Profiles", back_populates="profiles_categories")
+    categories_joincategoryads = relationship("JoinCategoryAds", back_populates="joincategoryads_categories")
+    
 
 class PhoneNumbers(Base):
     __tablename__      = "phone_numbers"
@@ -123,7 +125,6 @@ class Profiles(Base):
     tm_muse_card       = Column(Float)
     is_certificate     = Column(Boolean)
     is_promo           = Column(Boolean)
-    is_ads             = Column(Boolean)
     status             = Column(Integer)
     category_id        = Column(Integer, ForeignKey("categories.id"))
     view_count         = Column(Integer)
@@ -141,3 +142,26 @@ class Profiles(Base):
     profiles_phonenumbers      = relationship("PhoneNumbers"        , back_populates="phonenumbers_profiles")
     profiles_banners           = relationship("Banners"             , back_populates="banners_profiles")
     profiles_categories        = relationship("Categories"          , back_populates="categories_profiles")
+    profiles_ads               = relationship("Ads"                 , back_populates="ads_profiles")
+    
+    
+class Ads(Base):
+    __tablename__      = "ads"
+    id                 = Column(Integer, primary_key=True, index=True)
+    name               = Column(String)
+    comment_of_admin   = Column(String)
+    image              = Column(String)
+    is_main            = Column(Boolean)
+    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    ads_profiles        = relationship("Profiles", back_populates="profiles_ads")
+    ads_joincategoryads = relationship("JoinCategoryAds", back_populates="joincategoryads_ads")
+    
+class JoinCategoryAds(Base):
+    __tablename__      = "join_category_ads"
+    id                 = Column(Integer, primary_key=True, index=True)
+    ads_id             = Column(Integer, ForeignKey("ads.id"))
+    category_id        = Column(Integer, ForeignKey("categories.id"))
+    joincategoryads_ads        = relationship("Ads", back_populates="ads_joincategoryads")
+    joincategoryads_categories = relationship("Categories", back_populates="categories_joincategoryads")
