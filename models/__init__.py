@@ -11,8 +11,11 @@ from models.models import Images
 from models.models import Profiles
 from models.models import Ads
 from models.models import JoinCategoryAds
+from models.models import Tags
+from models.models import TagProducts
 
 
 from models.schemas import PhoneVerify
 from models.schemas import CodeVerify
 from models.schemas import AddUserInterest
+from models.schemas import GetProfile

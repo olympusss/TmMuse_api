@@ -22,3 +22,13 @@ class AddUserInterest(BaseModel):
     
     class Config:
         orm_mode = True
+        
+class GetProfile(BaseModel):
+    category        : List[int]
+    sort            : int
+    tags_id         : List[int]
+    limit           : int
+    page            : int
+    
+    class Config:
+        orm_mode = True

@@ -143,6 +143,10 @@ class Profiles(Base):
     profiles_banners           = relationship("Banners"             , back_populates="banners_profiles")
     profiles_categories        = relationship("Categories"          , back_populates="categories_profiles")
     profiles_ads               = relationship("Ads"                 , back_populates="ads_profiles")
+    profiles_tags              = relationship("Tags"                , back_populates="tags_profiles")
+    profiles_tagproducts       = relationship("TagProducts"         , back_populates="tagproducts_profiles")
+    
+    
     
     
 class Ads(Base):
@@ -165,3 +169,27 @@ class JoinCategoryAds(Base):
     category_id        = Column(Integer, ForeignKey("categories.id"))
     joincategoryads_ads        = relationship("Ads", back_populates="ads_joincategoryads")
     joincategoryads_categories = relationship("Categories", back_populates="categories_joincategoryads")
+    
+    
+class Tags(Base):
+    __tablename__      = "tags"
+    id                 = Column(Integer, primary_key=True, index=True)
+    tagTM              = Column(String)
+    tagRU              = Column(String)
+    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    tags_profiles      = relationship("Profiles"    , back_populates="profiles_tags")
+    tags_tagproducts   = relationship("TagProducts" , back_populates="tagproducts_tags")
+    
+    
+
+class TagProducts(Base):
+    __tablename__      = "tag_products"
+    id                 = Column(Integer, primary_key=True, index=True)
+    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    tags_id            = Column(Integer, ForeignKey("tags.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    tagproducts_profiles = relationship("Profiles", back_populates="profiles_tagproducts")
+    tagproducts_tags     = relationship("Tags"    , back_populates="tags_tagproducts")
