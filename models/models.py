@@ -13,6 +13,11 @@ class Users(Base):
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     users_userinterests = relationship("UserInterests", back_populates="userinterests_users")
+    users_certificates  = relationship("Certificates" , back_populates="certificates_users")
+    users_promocodes    = relationship("PromoCodes"   , back_populates="promocodes_users")
+
+    
+    
     
     
 class Interests(Base):
@@ -67,6 +72,8 @@ class Categories(Base):
     updated_at         = Column(DateTime, default=datetime.now())
     categories_profiles        = relationship("Profiles", back_populates="profiles_categories")
     categories_joincategoryads = relationship("JoinCategoryAds", back_populates="joincategoryads_categories")
+    categories_tags            = relationship("Tags", back_populates="tags_categories")
+    
     
 
 class PhoneNumbers(Base):
@@ -133,7 +140,7 @@ class Profiles(Base):
     descriptionRU      = Column(String)
     order_in_list      = Column(Integer)
     free_time          = Column(String)
-    tenants_id         = Column(Integer)
+    tenants_id         = Column(Integer, ForeignKey("tenants.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     
@@ -143,8 +150,17 @@ class Profiles(Base):
     profiles_banners           = relationship("Banners"             , back_populates="banners_profiles")
     profiles_categories        = relationship("Categories"          , back_populates="categories_profiles")
     profiles_ads               = relationship("Ads"                 , back_populates="ads_profiles")
-    profiles_tags              = relationship("Tags"                , back_populates="tags_profiles")
     profiles_tagproducts       = relationship("TagProducts"         , back_populates="tagproducts_profiles")
+    profiles_galleries         = relationship("Galleries"           , back_populates="galleries_profiles")
+    profiles_posts             = relationship("Posts"               , back_populates="posts_profiles")
+    profiles_certificates      = relationship("Certificates"        , back_populates="certificates_profiles")
+    profiles_promocodes        = relationship("PromoCodes"          , back_populates="promocodes_profiles")
+    profiles_tenants           = relationship("Tenants"             , back_populates="tenants_profiles")
+
+    
+      
+    
+    
     
     
     
@@ -176,11 +192,11 @@ class Tags(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     tagTM              = Column(String)
     tagRU              = Column(String)
-    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    category_id        = Column(Integer, ForeignKey("categories.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    tags_profiles      = relationship("Profiles"    , back_populates="profiles_tags")
     tags_tagproducts   = relationship("TagProducts" , back_populates="tagproducts_tags")
+    tags_categories    = relationship("Categories", back_populates="categories_tags")
     
     
 
@@ -193,3 +209,65 @@ class TagProducts(Base):
     updated_at         = Column(DateTime, default=datetime.now())
     tagproducts_profiles = relationship("Profiles", back_populates="profiles_tagproducts")
     tagproducts_tags     = relationship("Tags"    , back_populates="tags_tagproducts")
+    
+    
+class Galleries(Base):
+    __tablename__      = "galleries"
+    id                 = Column(Integer, primary_key=True, index=True)
+    medium_image       = Column(String)
+    large_image        = Column(String)
+    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    galleries_profiles = relationship("Profiles", back_populates="profiles_galleries")
+    
+class Posts(Base):
+    __tablename__      = "posts"
+    id                 = Column(Integer, primary_key=True, index=True)
+    titleTM            = Column(String)
+    titleRU            = Column(String)
+    image              = Column(String)
+    promotion          = Column(Float)
+    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    posts_profiles = relationship("Profiles", back_populates="profiles_posts")
+    
+    
+class Certificates(Base):
+    __tablename__      = "certificates"
+    id                 = Column(Integer, primary_key=True, index=True)
+    amount             = Column(Float)
+    status             = Column(Integer)
+    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    user_id            = Column(Integer, ForeignKey("users.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    certificates_profiles = relationship("Profiles", back_populates="profiles_certificates")
+    certificates_users    = relationship("Users"   , back_populates="users_certificates")
+    
+    
+class PromoCodes(Base):
+    __tablename__      = "promo_codes"
+    id                 = Column(Integer, primary_key=True, index=True)
+    promo_code         = Column(String)
+    status             = Column(Integer)
+    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    user_id            = Column(Integer, ForeignKey("users.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    promocodes_profiles = relationship("Profiles", back_populates="profiles_promocodes")
+    promocodes_users    = relationship("Users"   , back_populates="users_promocodes")
+    
+class Tenants(Base):
+    __tablename__      = "tenants"
+    id                 = Column(Integer, primary_key=True, index=True)
+    name               = Column(String)
+    login              = Column(String)
+    password           = Column(String)
+    email              = Column(String)
+    phone_number       = Column(String)
+    comment_of_admin   = Column(String)
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    tenants_profiles   = relationship("Profiles", back_populates="profiles_tenants")

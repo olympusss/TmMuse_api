@@ -13,6 +13,11 @@ from models.models import Ads
 from models.models import JoinCategoryAds
 from models.models import Tags
 from models.models import TagProducts
+from models.models import Galleries
+from models.models import Posts
+from models.models import Certificates
+from models.models import PromoCodes
+from models.models import Tenants
 
 
 from models.schemas import PhoneVerify
