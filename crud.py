@@ -4,7 +4,7 @@ from models import (
     Users, CodeVerify, InterestItems, Interests, AddUserInterest, UserInterests,
     Banners, Categories, PhoneNumbers, PromotionStatuses, Images, Profiles,
     Ads, JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
-    Certificates, PromoCodes, Tenants
+    Certificates, PromoCodes, Tenants, Inbox, SendUser, Answers, AnsweredMessages
 )
 from tokens import create_access_token
 
@@ -416,6 +416,54 @@ def read_ads_by_join_category_id(db: Session, profile_id):
     result = result.join(Categories, Categories.id == JoinCategoryAds.category_id)
     result = result.join(Profiles, Profiles.category_id == Categories.id)
     result = result.filter(Profiles.id == profile_id)
+    if result:
+        return result.all()
+    else:
+        return False
+    
+def read_user_by_fullname_and_phone_number(db: Session, fullname, phone_number):
+    result = db.query(
+        Users.id
+    ).filter(and_(Users.fullname == fullname, Users.phone_number == phone_number)).first()
+    if result:
+        return result
+    else:
+        return False
+
+def read_inbox_by_user_id(db: Session, user_id):
+    result = db.query(
+        SendUser.is_read,
+        Inbox.title,
+        Inbox.message,
+        Inbox.is_all
+    )
+    result = result.join(Inbox, Inbox.id == SendUser.inbox_id)
+    result = result.filter(SendUser.user_id == user_id)
+    if result:
+        return result.all()
+    else:
+        return False
+    
+def read_inbox(db: Session):
+    result = db.query(
+        Inbox.id,
+        Inbox.title,
+        Inbox.message,
+    ).filter(Inbox.is_all == True).all()
+    if result:
+        return result
+    else:
+        return False
+    
+def read_answered_messages_by_user_id(db: Session, user_id):
+    result = db.query(
+        AnsweredMessages.title,
+        AnsweredMessages.message
+    )
+    result = result.join(Answers, Answers.answered_msg_id == AnsweredMessages.id)
+    result = result.join(Inbox, Inbox.id == Answers.inbox_id)
+    result = result.join(SendUser, SendUser.inbox_id == Inbox.id)
+    result = result.filter(SendUser.user_id == user_id)
     if result:
         return result.all()
     else:

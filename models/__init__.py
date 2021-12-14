@@ -18,6 +18,10 @@ from models.models import Posts
 from models.models import Certificates
 from models.models import PromoCodes
 from models.models import Tenants
+from models.models import Inbox
+from models.models import SendUser
+from models.models import AnsweredMessages
+from models.models import Answers
 
 
 from models.schemas import PhoneVerify

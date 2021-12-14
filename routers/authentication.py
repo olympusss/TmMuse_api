@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from db import get_db
 import random
 import crud
-from tokens import Returns, create_access_token
+from tokens import Returns
 
 authentication_router = APIRouter()
 

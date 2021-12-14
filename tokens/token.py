@@ -11,6 +11,15 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+    
+def decode_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except:
+        return False
+
+
 def check_token(header_param: Request):
     token = header_param.headers.get('WWW-Authentication')
     if not token:
@@ -18,5 +27,5 @@ def check_token(header_param: Request):
     elif token == "Bearer":
         return False
     else:
-        return True
-    
+        token = token.split('Bearer ')[1]
+        return token

@@ -6,6 +6,7 @@ from routers import interest_router
 from routers import home_router
 from routers import profile_router
 from routers import category_router
+from routers import answers_router
 
 app = FastAPI()
 
@@ -27,6 +28,7 @@ app.include_router(interest_router         , tags=["Interest"])
 app.include_router(home_router             , tags=["Home"])
 app.include_router(profile_router          , tags=["Profile"])
 app.include_router(category_router         , tags=["Category"])
+app.include_router(answers_router          , tags=["Answer"])
 
 if __name__ == "__main__":
     import uvicorn
