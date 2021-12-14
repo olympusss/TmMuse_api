@@ -15,6 +15,8 @@ class Users(Base):
     users_userinterests = relationship("UserInterests", back_populates="userinterests_users")
     users_certificates  = relationship("Certificates" , back_populates="certificates_users")
     users_promocodes    = relationship("PromoCodes"   , back_populates="promocodes_users")
+    users_senduser      = relationship("SendUser"     , back_populates="senduser_users")
+    
 
     
     
@@ -159,11 +161,7 @@ class Profiles(Base):
 
     
       
-    
-    
-    
-    
-    
+
     
 class Ads(Base):
     __tablename__      = "ads"
@@ -271,3 +269,48 @@ class Tenants(Base):
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     tenants_profiles   = relationship("Profiles", back_populates="profiles_tenants")
+    
+    
+class Inbox(Base):
+    __tablename__      = "inbox"
+    id                 = Column(Integer, primary_key=True, index=True)
+    title              = Column(String)
+    message            = Column(String)
+    is_all             = Column(Boolean)
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    inbox_senduser     = relationship("SendUser", back_populates="senduser_inbox")
+    inbox_answers      = relationship("Answers" , back_populates="answers_inbox")
+    
+    
+    
+class SendUser(Base):
+    __tablename__      = "send_user"
+    id                 = Column(Integer, primary_key=True, index=True)
+    is_read            = Column(Boolean)
+    user_id            = Column(Integer, ForeignKey("users.id"))
+    inbox_id           = Column(Integer, ForeignKey("inbox.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    senduser_inbox     = relationship("Inbox", back_populates="inbox_senduser")
+    senduser_users     = relationship("Users", back_populates="users_senduser")
+    
+class AnsweredMessages(Base):
+    __tablename__      = "answered_messages"
+    id                 = Column(Integer, primary_key=True, index=True)
+    title              = Column(String)
+    message            = Column(String)
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    answeredmessages_answers = relationship("Answers", back_populates="answers_answeredmessages")
+    
+    
+class Answers(Base):
+    __tablename__      = "answers"
+    id                 = Column(Integer, primary_key=True, index=True)
+    answered_msg_id    = Column(Integer, ForeignKey("answered_messages.id"))
+    inbox_id           = Column(Integer, ForeignKey("inbox.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    answers_inbox            = relationship("Inbox", back_populates="inbox_answers")
+    answers_answeredmessages = relationship("AnsweredMessages", back_populates="answeredmessages_answers")
