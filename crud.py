@@ -449,9 +449,9 @@ def read_inbox(db: Session):
         Inbox.id,
         Inbox.title,
         Inbox.message,
-    ).filter(Inbox.is_all == True).all()
+    ).filter(Inbox.is_all == True)
     if result:
-        return result
+        return result.all()
     else:
         return False
     
