@@ -1,8 +1,11 @@
-from datetime import date, datetime
+translation = {}
 
-string = "15/12/21"
+translation[ord("a")] = "а"
+translation[ord("r")] = "р"
+translation[ord("s")] = "с"
+translation[ord("l")] = "л"
+translation[ord("n")] = "н"
 
-string2date = datetime.strptime(string, '%d/%m/%y')
-
-print(type(string2date))
-
+s1 = "арслан"
+s2 = s1.translate(translation)
+print(s2)

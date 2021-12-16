@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from db import get_db
 from tokens import check_token, decode_token, Returns
 import crud
-from models import CreateInbox
+from models import CreateInbox, Inbox
 
 answers_router = APIRouter()
 
