@@ -39,6 +39,14 @@ class CreateCardUsers(BaseModel):
     email           : str
     is_sms          : bool
     status          : int
+    job_id          : int
+    
+    class Config:
+        orm_mode = True
+        
+class CreateInbox(BaseModel):
+    title           : str
+    message         : str
     
     class Config:
         orm_mode = True

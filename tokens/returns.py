@@ -8,6 +8,7 @@ class Returns:
     NULL              = {"error" : True,  "body" : "NULL"}
     TOKEN_NOT_FOUND   = {"error" : True,  "body" : "TOKEN_NOT_FOUND"}
     TOKEN_NOT_DECODED = {"error" : True,  "body" : "TOKEN_NOT_DECODED"}
+    USER_NOT_FOUND    = {"error" : True,  "body" : "USER_NOT_FOUND"}
     
     def object(obj):
         return {"error" : False, "body" : obj}

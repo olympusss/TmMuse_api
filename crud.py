@@ -5,7 +5,7 @@ from models import (
     Categories, PhoneNumbers, PromotionStatuses, Images, Profiles, Ads, 
     JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
     Certificates, PromoCodes, Tenants, Inbox, SendUser, Answers, AnsweredMessages,
-    CardUsers, Jobs, CreateCardUsers
+    CardUsers, Jobs, CreateCardUsers, Constants, CreateInbox
 )
 from tokens import create_access_token
 from datetime import datetime
@@ -521,6 +521,55 @@ def create_card_user(db: Session, req: CreateCardUsers, userID):
         status        = req.status,
         card_id       = cardID,
         user_id       = userID,
+        job_id        = req.job_id
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
+    else:
+        return False
+    
+def read_constant_by_type(db: Session, type):
+    result = db.query(
+        Constants.id,
+        Constants.titleTM,
+        Constants.titleRU,
+        Constants.contentTM,
+        Constants.contentRU
+    ).filter(Constants.type == type).all()
+    if result:
+        return result
+    else:
+        return False
+    
+def create_inbox(db: Session, req: CreateInbox):
+    new_add = Inbox(
+        title   = req.title,
+        message = req.message,
+        is_all  = False
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
+    else:
+        return False
+    
+def read_inbox_by_title_and_message(db: Session, title, message):
+    result = db.query(Inbox.id).filter(Inbox.title == title, Inbox.message == message).first()
+    if result:
+        return result
+    else:
+        return False
+    
+def create_send_user(db: Session, userID, inboxID):
+    new_add = SendUser(
+        is_read     = False,
+        user_id     = userID,
+        inbox_id    = inboxID
     )
     db.add(new_add)
     db.commit()

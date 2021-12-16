@@ -5,3 +5,4 @@ from routers.profile import profile_router
 from routers.category import category_router
 from routers.answer import answers_router
 from routers.card import card_router
+from routers.constant import constant_router

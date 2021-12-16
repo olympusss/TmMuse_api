@@ -344,3 +344,14 @@ class Jobs(Base):
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     jobs_cardusers     = relationship("CardUsers", back_populates="cardusers_jobs")
+    
+class Constants(Base):
+    __tablename__      = "constants"
+    id                 = Column(Integer, primary_key=True, index=True)
+    titleTM            = Column(String)
+    titleRU            = Column(String)
+    contentTM          = Column(String)
+    contentRU          = Column(String)
+    type               = Column(String)
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())

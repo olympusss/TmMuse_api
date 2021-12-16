@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from db import get_db
 from tokens import check_token, decode_token, Returns
 import crud
-from models import CreateCardUsers, CardUsers
+from models import CreateCardUsers
 
 card_router = APIRouter()
 
@@ -34,6 +34,8 @@ def create_card_user(header_param: Request, req: CreateCardUsers, db: Session = 
     fullname: str = payload.get("fullname")
     phone_number: str = payload.get("phone_number")
     user_id = crud.read_user_by_fullname_and_phone_number(db=db, fullname=fullname, phone_number=phone_number)
+    if not user_id:
+        return Returns.USER_NOT_FOUND
     result = crud.create_card_user(db=db, req=req, userID=user_id["id"])
     if result:
         return Returns.INSERTED
