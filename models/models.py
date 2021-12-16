@@ -1,3 +1,4 @@
+from re import S
 from sqlalchemy import Column, String, Integer, DateTime, Float, Boolean, ForeignKey
 from datetime import datetime
 from sqlalchemy.orm import relationship
@@ -16,6 +17,8 @@ class Users(Base):
     users_certificates  = relationship("Certificates" , back_populates="certificates_users")
     users_promocodes    = relationship("PromoCodes"   , back_populates="promocodes_users")
     users_senduser      = relationship("SendUser"     , back_populates="senduser_users")
+    users_cardusers     = relationship("CardUsers"    , back_populates="cardusers_users")
+    
     
 
     
@@ -314,3 +317,30 @@ class Answers(Base):
     updated_at         = Column(DateTime, default=datetime.now())
     answers_inbox            = relationship("Inbox", back_populates="inbox_answers")
     answers_answeredmessages = relationship("AnsweredMessages", back_populates="answeredmessages_answers")
+    
+    
+class CardUsers(Base):
+    __tablename__      = "card_users"
+    id                 = Column(Integer, primary_key=True, index=True)
+    date_of_birth      = Column(DateTime)
+    gender             = Column(Integer)
+    passport_info      = Column(String)
+    email              = Column(String)
+    is_sms             = Column(Boolean)
+    status             = Column(Integer)
+    card_id            = Column(String)
+    user_id            = Column(Integer, ForeignKey("users.id"))
+    job_id             = Column(Integer, ForeignKey("jobs.id"))
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    cardusers_users    = relationship("Users", back_populates="users_cardusers")
+    cardusers_jobs     = relationship("Jobs", back_populates="jobs_cardusers")
+    
+class Jobs(Base):
+    __tablename__      = "jobs"
+    id                 = Column(Integer, primary_key=True, index=True)
+    nameTM             = Column(String)
+    nameRU             = Column(String)
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    jobs_cardusers     = relationship("CardUsers", back_populates="cardusers_jobs")

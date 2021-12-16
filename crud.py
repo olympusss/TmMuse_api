@@ -1,12 +1,15 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc, and_, or_
 from models import (
-    Users, CodeVerify, InterestItems, Interests, AddUserInterest, UserInterests,
-    Banners, Categories, PhoneNumbers, PromotionStatuses, Images, Profiles,
-    Ads, JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
-    Certificates, PromoCodes, Tenants, Inbox, SendUser, Answers, AnsweredMessages
+    Users, CodeVerify, InterestItems, Interests, UserInterests, Banners, 
+    Categories, PhoneNumbers, PromotionStatuses, Images, Profiles, Ads, 
+    JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
+    Certificates, PromoCodes, Tenants, Inbox, SendUser, Answers, AnsweredMessages,
+    CardUsers, Jobs, CreateCardUsers
 )
 from tokens import create_access_token
+from datetime import datetime
+import random
 
 def read_all_users(db: Session):
     result = db.query(
@@ -466,5 +469,63 @@ def read_answered_messages_by_user_id(db: Session, user_id):
     result = result.filter(SendUser.user_id == user_id)
     if result:
         return result.all()
+    else:
+        return False
+    
+def read_all_jobs(db: Session):
+    result = db.query(
+        Jobs.nameTM,
+        Jobs.nameRU
+    ).all()
+    if result:
+        return result
+    else:
+        return False
+    
+def read_profile_card_promotion(db: Session, limit, page):
+    result = db.query(
+        Profiles.id,
+        Profiles.nameTM,
+        Profiles.nameRU,
+        Profiles.short_descTM,
+        Profiles.short_descRU,
+        Profiles.tm_muse_card,
+        Profiles.like,
+        Profiles.dislike,
+        Profiles.instagram,
+        Profiles.site,
+        Images.small_image,
+        Images.large_image,
+        PhoneNumbers.phone_number
+    )
+    result = result.join(Images, Images.profile_id == Profiles.id)
+    result = result.join(PhoneNumbers, PhoneNumbers.profile_id == Profiles.id)
+    result = result.filter(Profiles.is_active_card == True)
+    result = result.order_by(desc(Profiles.updated_at))
+    result = result.offset(limit * (page - 1)).limit(limit).all()
+    if result:
+        return result
+    else:
+        return False
+    
+def create_card_user(db: Session, req: CreateCardUsers, userID):
+    cardID = random.randrange(1000000000, 9999999999)
+    cardID = str(cardID)
+    str2date = datetime.strptime(req.date, '%d/%m/%y')
+    new_add = CardUsers(
+        date_of_birth = str2date,
+        gender        = req.gender,
+        passport_info = req.passport_info,
+        email         = req.email,
+        is_sms        = req.is_sms,
+        status        = req.status,
+        card_id       = cardID,
+        user_id       = userID,
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
     else:
         return False

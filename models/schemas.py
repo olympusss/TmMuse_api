@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import List
 
-from sqlalchemy.sql.expression import true
 
 class PhoneVerify(BaseModel):
     phone_number    : str
@@ -29,6 +28,17 @@ class GetProfile(BaseModel):
     tags_id         : List[int]
     limit           : int
     page            : int
+    
+    class Config:
+        orm_mode = True
+        
+class CreateCardUsers(BaseModel):
+    date            : str
+    gender          : int
+    passport_info   : str
+    email           : str
+    is_sms          : bool
+    status          : int
     
     class Config:
         orm_mode = True
