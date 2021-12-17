@@ -1,4 +1,3 @@
-from sqlalchemy import schema
 from models.models import Users
 from models.models import Interests
 from models.models import InterestItems
@@ -33,3 +32,5 @@ from models.schemas import AddUserInterest
 from models.schemas import GetProfile
 from models.schemas import CreateCardUsers
 from models.schemas import CreateInbox
+from models.schemas import GetPromoCodes
+from models.schemas import AddCertificate

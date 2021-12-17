@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from db import get_db
-from tokens import Returns
-from models import GetProfile
+from tokens import Returns, check_token, decode_token
+from models import GetProfile, GetPromoCodes, AddCertificate
 import crud
 
 profile_router = APIRouter()
@@ -63,3 +63,75 @@ def get_profile_tiny(profile_id: int, db: Session = Depends(get_db)):
         return Returns.object(results)
     else:
         Returns.NULL
+        
+
+
+@profile_router.post("/get-promo-codes")
+def get_promo_codes(req: GetPromoCodes, header_param: Request, db: Session = Depends(get_db)):
+    
+    get_token = check_token(header_param=header_param)
+    if not get_token:
+        return Returns.TOKEN_NOT_FOUND
+    
+    payload = decode_token(token=get_token)
+    if not payload:
+        return Returns.TOKEN_NOT_DECODED
+    
+    fullname: str = payload.get("fullname")
+    phone_number: str = payload.get("phone_number")
+    user_id = crud.read_user_by_fullname_and_phone_number(db=db, fullname=fullname, phone_number=phone_number)
+    if not user_id:
+        return Returns.USER_NOT_FOUND
+    
+    # first condition
+    profile_have_is_promo_eq_true = crud.read_profile_by_profile_id_filter_is_promo(db=db, profile_id=req.profile_id)
+    if not profile_have_is_promo_eq_true:
+        return Returns.NULL
+    
+    # second condition
+    promo_code_have = crud.read_promo_codes_by_profile_id_user_id(db=db, profile_id=req.profile_id, user_id=user_id["id"])
+    if promo_code_have:
+        return Returns.object(promo_code_have)
+    
+    # third condition
+    promo_code_count = crud.read_promo_code_count_by_profile_id(db=db, profile_id=req.profile_id)
+    profile_promo_count = crud.read_profile_promo_count_by_profile_id(db=db, profile_id=req.profile_id)
+    if promo_code_count >= profile_promo_count["promo_count"]:
+        return Returns.LIMIT
+    
+    # fourth condition
+    add_promo_count = crud.create_promo_code(db=db, userID=user_id["id"], profileID=req.profile_id)
+    if add_promo_count:
+        return Returns.INSERTED
+    else:
+        return Returns.NOT_INSERTED
+    
+
+@profile_router.post("/create-certificate")
+def insert_certificate(req: AddCertificate, header_param: Request, db: Session = Depends(get_db)):
+    get_token = check_token(header_param=header_param)
+    if not get_token:
+        return Returns.TOKEN_NOT_FOUND
+    payload = decode_token(token=get_token)
+    if not payload:
+        return Returns.TOKEN_NOT_DECODED
+    fullname: str = payload.get("fullname")
+    phone_number: str = payload.get("phone_number")
+    user_id = crud.read_user_by_fullname_and_phone_number(db=db, fullname=fullname, phone_number=phone_number)   
+    
+    insert_certificates = crud.create_certificates(db=db, req=req, userID=user_id["id"])
+    if not insert_certificates:
+        return Returns.NOT_INSERTED
+    
+    insert_inbox = crud.create_inbox_by_certificates(db=db, req=req, userID=user_id["id"])
+    if not insert_inbox:
+        return Returns.NOT_INSERTED
+    
+    get_inbox_id = crud.read_inbox_by_message(db=db, txt=insert_inbox)
+    
+    insert_send_user = crud.create_send_user(db=db, inboxID=get_inbox_id["id"], userID=user_id["id"])
+    
+    if insert_send_user:
+        return Returns.INSERTED
+    else:
+        return Returns.NOT_INSERTED

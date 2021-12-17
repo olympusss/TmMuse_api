@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from typing import List
 
+from db.connection import Base
+
 
 class PhoneVerify(BaseModel):
     phone_number    : str
@@ -47,6 +49,19 @@ class CreateCardUsers(BaseModel):
 class CreateInbox(BaseModel):
     title           : str
     message         : str
+    
+    class Config:
+        orm_mode = True
+        
+class GetPromoCodes(BaseModel):
+    profile_id      : int
+    
+    class Config:
+        orm_mode = True
+        
+class AddCertificate(BaseModel):
+    amount          : int
+    profile_id      : int
     
     class Config:
         orm_mode = True

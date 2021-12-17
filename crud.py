@@ -5,7 +5,7 @@ from models import (
     Categories, PhoneNumbers, PromotionStatuses, Images, Profiles, Ads, 
     JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
     Certificates, PromoCodes, Tenants, Inbox, SendUser, Answers, AnsweredMessages,
-    CardUsers, Jobs, CreateCardUsers, Constants, CreateInbox
+    CardUsers, Jobs, CreateCardUsers, Constants, CreateInbox, AddCertificate
 )
 from tokens import create_access_token
 from datetime import datetime
@@ -223,9 +223,9 @@ def read_promotion_by_profile_id(db: Session, profile_id):
         PromotionStatuses.id,
         PromotionStatuses.promotion_status,
         PromotionStatuses.profile_id
-    ).filter(PromotionStatuses.profile_id == profile_id).first()
+    ).filter(PromotionStatuses.profile_id == profile_id)
     if get_promotion:
-        return get_promotion
+        return get_promotion.first()
     else:
         return False
     
@@ -279,9 +279,9 @@ def read_profile_by_profile_id(db: Session, profile_id):
         Profiles.tenants_id,
         Profiles.is_cash,
         Profiles.is_terminal
-    ).filter(Profiles.id == profile_id).first()
+    ).filter(Profiles.id == profile_id)
     if result:
-        return result
+        return result.first()
     else:
         return False
     
@@ -290,9 +290,9 @@ def read_phone_numbers_by_profile_id(db: Session, profile_id):
         PhoneNumbers.id,
         PhoneNumbers.phone_number,
         PhoneNumbers.profile_id
-    ).filter(PhoneNumbers.profile_id == profile_id).all()
+    ).filter(PhoneNumbers.profile_id == profile_id)
     if result:
-        return result
+        return result.all()
     else:
         return False
     
@@ -303,9 +303,9 @@ def read_images_by_profile_id(db: Session, profile_id):
         Images.large_image,
         Images.isVR,
         Images.profile_id
-    ).filter(Images.profile_id == profile_id).all()
+    ).filter(Images.profile_id == profile_id)
     if result:
-        return result
+        return result.all()
     else:
         return False
     
@@ -316,9 +316,9 @@ def read_galleries_by_profile_id(db: Session, profile_id):
         Galleries.medium_image,
         Galleries.large_image,
         Galleries.profile_id
-    ).filter(Galleries.profile_id == profile_id).all()
+    ).filter(Galleries.profile_id == profile_id)
     if result:
-        return result
+        return result.all()
     else:
         return False
     
@@ -330,9 +330,9 @@ def read_posts_by_profile_id(db: Session, profile_id):
         Posts.image,
         Posts.promotion,
         Posts.profile_id
-    ).filter(Posts.profile_id == profile_id).all()
+    ).filter(Posts.profile_id == profile_id)
     if result:
-        return result
+        return result.all()
     else:
         return False
     
@@ -343,9 +343,9 @@ def read_certificates_by_profile_id(db: Session, profile_id):
         Certificates.status,
         Certificates.user_id,
         Certificates.profile_id
-    ).filter(Certificates.profile_id == profile_id).all()
+    ).filter(Certificates.profile_id == profile_id)
     if result:
-        return result
+        return result.all()
     else:
         return False
     
@@ -356,9 +356,9 @@ def read_promo_codes_by_profile_id(db: Session, profile_id):
         PromoCodes.status,
         PromoCodes.user_id,
         PromoCodes.profile_id
-    ).filter(PromoCodes.profile_id == profile_id).all()
+    ).filter(PromoCodes.profile_id == profile_id)
     if result:
-        return result
+        return result.all()
     else:
         return False
     
@@ -570,6 +570,123 @@ def create_send_user(db: Session, userID, inboxID):
         is_read     = False,
         user_id     = userID,
         inbox_id    = inboxID
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
+    else:
+        return False
+    
+    
+def read_profile_by_profile_id_filter_is_promo(db: Session, profile_id):
+    result = db.query(
+        Profiles.id
+    ).filter(Profiles.is_promo == True).all()
+    if result:
+        return True
+    else:
+        return False
+    
+def read_promo_codes_by_profile_id_user_id(db: Session, user_id, profile_id):
+    result = db.query(
+        PromoCodes.promo_code
+    ).filter(
+        and_(
+            PromoCodes.user_id == user_id, 
+            PromoCodes.profile_id == profile_id, 
+            PromoCodes.status == 1
+        ))
+    if result:
+        return result.all()
+    else:
+        return False
+    
+def read_promo_code_count_by_profile_id(db: Session, profile_id):
+    result = db.query(
+        PromoCodes
+    ).filter(
+        and_(
+            PromoCodes.profile_id == profile_id, 
+            PromoCodes.status == 1
+        )).count()
+    if result:
+        return result
+    else:
+        return False
+
+
+def read_profile_promo_count_by_profile_id(db: Session, profile_id):
+    result = db.query(
+        Profiles.promo_count
+    ).filter(Profiles.id == profile_id).first()
+    if result:
+        return result
+    else:
+        return False
+    
+    
+def create_promo_code(db: Session, profileID, userID):
+    generated_promo_code = random.randrange(10000000, 99999999)
+    new_add = PromoCodes(
+        promo_code = generated_promo_code,
+        profile_id = profileID,
+        user_id    = userID,
+        status     = 1
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
+    else:
+        return False
+    
+def create_certificates(db: Session, req: AddCertificate, userID):
+    new_add = Certificates(
+        amount     = req.amount,
+        profile_id = req.profile_id,
+        user_id    = userID,
+        status     = 0
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
+    else:
+        return False
+    
+def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
+    txt = f"amount={req.amount},profile_id={req.profile_id},user_id={userID}"
+    new_add = Inbox(
+        title   = "certificate",
+        message = txt,
+        is_all  = False,
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return txt
+    else:
+        return False
+    
+def read_inbox_by_message(db: Session, txt):
+    result = db.query(
+        Inbox.id
+    ).filter(Inbox.message == txt).first()
+    if result:
+        return result
+    else:
+        return False
+    
+def create_send_user(db: Session, userID, inboxID):
+    new_add = SendUser(
+        user_id     = userID,
+        inbox_id    = inboxID,
+        is_read     = False
     )
     db.add(new_add)
     db.commit()

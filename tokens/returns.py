@@ -9,6 +9,7 @@ class Returns:
     TOKEN_NOT_FOUND   = {"error" : True,  "body" : "TOKEN_NOT_FOUND"}
     TOKEN_NOT_DECODED = {"error" : True,  "body" : "TOKEN_NOT_DECODED"}
     USER_NOT_FOUND    = {"error" : True,  "body" : "USER_NOT_FOUND"}
+    LIMIT             = {"error" : True,  "body" : "LIMIT"}
     
     def object(obj):
         return {"error" : False, "body" : obj}
