@@ -34,3 +34,4 @@ from models.schemas import CreateCardUsers
 from models.schemas import CreateInbox
 from models.schemas import GetPromoCodes
 from models.schemas import AddCertificate
+from models.schemas import Search

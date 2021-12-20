@@ -65,3 +65,9 @@ class AddCertificate(BaseModel):
     
     class Config:
         orm_mode = True
+        
+class Search(BaseModel):
+    text            : str
+    
+    class Config:
+        orm_mode = True

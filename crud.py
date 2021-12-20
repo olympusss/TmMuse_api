@@ -5,10 +5,12 @@ from models import (
     Categories, PhoneNumbers, PromotionStatuses, Images, Profiles, Ads, 
     JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
     Certificates, PromoCodes, Tenants, Inbox, SendUser, Answers, AnsweredMessages,
-    CardUsers, Jobs, CreateCardUsers, Constants, CreateInbox, AddCertificate
+    CardUsers, Jobs, CreateCardUsers, Constants, CreateInbox, AddCertificate,
+    Search
 )
 from tokens import create_access_token
 from datetime import datetime
+from translation import translation2TM, translation2RU
 import random
 
 def read_all_users(db: Session):
@@ -693,5 +695,38 @@ def create_send_user(db: Session, userID, inboxID):
     db.refresh(new_add)
     if new_add:
         return True
+    else:
+        return False
+    
+    
+def search_profile_by_like(db: Session, req: Search):
+    result = db.query(
+        Profiles.id,
+        Profiles.nameTM,
+        Profiles.nameRU,
+        Profiles.short_descTM,
+        Profiles.short_descRU,
+        Profiles.like,
+        Profiles.dislike,
+        Profiles.instagram,
+        Profiles.site,
+        Profiles.status,
+        Images.small_image,
+        Images.large_image,
+        PhoneNumbers.phone_number
+    )
+    result = result.join(Images, Images.profile_id == Profiles.id)
+    result = result.join(PhoneNumbers, PhoneNumbers.profile_id == Profiles.id)
+    result = result.join(TagProducts, TagProducts.profile_id == Profiles.id)
+    result = result.join(Categories, Categories.id == Profiles.category_id)
+    result = result.filter(
+        or_(
+            Profiles.nameTM.like(f"%{req.text}%"),
+            Profiles.nameTM.like(f"%{(req.text).translate(translation2TM)}%"),
+            Profiles.nameRU.like(f"%{req.text}%"),
+            Profiles.nameRU.like(f"%{(req.text).translate(translation2RU)}%")
+            ))
+    if result:
+        return result.all()
     else:
         return False

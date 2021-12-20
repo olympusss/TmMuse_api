@@ -9,6 +9,7 @@ from routers import category_router
 from routers import answers_router
 from routers import card_router
 from routers import constant_router
+from routers import search_router
 
 app = FastAPI()
 
@@ -33,6 +34,7 @@ app.include_router(category_router         , tags=["Category"])
 app.include_router(answers_router          , tags=["Answer"])
 app.include_router(card_router             , tags=["Card"])
 app.include_router(constant_router         , tags=["Constant"])
+app.include_router(search_router           , tags=["Search"])
 
 if __name__ == "__main__":
     import uvicorn
