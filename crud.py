@@ -6,7 +6,7 @@ from models import (
     JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
     Certificates, PromoCodes, Tenants, Inbox, SendUser, Answers, AnsweredMessages,
     CardUsers, Jobs, CreateCardUsers, Constants, CreateInbox, AddCertificate,
-    Search
+    Search, SearchHistory
 )
 from tokens import create_access_token
 from datetime import datetime
@@ -728,5 +728,32 @@ def search_profile_by_like(db: Session, req: Search):
             ))
     if result:
         return result.all()
+    else:
+        return False
+    
+def create_search_history(db: Session, txt):
+    result = db.query(SearchHistory.text).filter(SearchHistory.text == txt).all()
+    if result:
+        db.query(SearchHistory).filter(SearchHistory.text == txt).\
+            update({
+                SearchHistory.count : SearchHistory.count + 1
+            }, synchronize_session=False)
+        db.commit()
+    else:
+        new_add = SearchHistory(
+            text     = txt,
+            count    = 1
+        )
+        db.add(new_add)
+        db.commit()
+        db.refresh(new_add)
+    return True
+
+def read_search_history(db: Session, txt):
+    result = db.query(
+        SearchHistory.text,
+    ).filter(SearchHistory.text == txt).order_by(desc(SearchHistory.count)).all()
+    if result:
+        return result
     else:
         return False

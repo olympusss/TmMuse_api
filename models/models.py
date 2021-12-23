@@ -2,6 +2,8 @@ from re import S
 from sqlalchemy import Column, String, Integer, DateTime, Float, Boolean, ForeignKey
 from datetime import datetime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.elements import ColumnElement
+from sqlalchemy.sql.expression import text
 from db import Base
 
 class Users(Base):
@@ -353,5 +355,14 @@ class Constants(Base):
     contentTM          = Column(String)
     contentRU          = Column(String)
     type               = Column(String)
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())
+    
+    
+class SearchHistory(Base):
+    __tablename__      = "search_history"
+    id                 = Column(Integer, primary_key=True, index=True)
+    text               = Column(String)
+    count              = Column(Integer)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())

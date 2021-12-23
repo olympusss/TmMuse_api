@@ -24,6 +24,7 @@ from models.models import Answers
 from models.models import CardUsers
 from models.models import Jobs
 from models.models import Constants
+from models.models import SearchHistory
 
 
 from models.schemas import PhoneVerify
