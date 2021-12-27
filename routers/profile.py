@@ -10,6 +10,8 @@ profile_router = APIRouter()
 @profile_router.post("/get-profile")
 def get_profile(req: GetProfile, db: Session = Depends(get_db)):
     results_profile = crud.read_profile(db=db, req=req)
+    if not results_profile:
+        return Returns.NULL
     newList = []
     for elem in results_profile:
         elem = dict(elem)
@@ -23,6 +25,8 @@ def get_profile(req: GetProfile, db: Session = Depends(get_db)):
         newList.append(elem)
     results_profile = newList
     results_ads = crud.read_ads_by_category_id(db=db, req=req)
+    if not results_ads:
+        return Returns.NULL
     results = {}
     results["profiles"] = results_profile
     results["ads"] = results_ads
@@ -35,17 +39,41 @@ def get_profile(req: GetProfile, db: Session = Depends(get_db)):
 @profile_router.get("/get-profile-tiny")
 def get_profile_tiny(profile_id: int, db: Session = Depends(get_db)):
     result_profile        = crud.read_profile_by_profile_id(db=db, profile_id=profile_id)
+    if not result_profile:
+        return Returns.NULL
     results_promotion     = crud.read_promotion_by_profile_id(db=db, profile_id=profile_id)
+    if not results_promotion:
+        return Returns.NULL
     results_phone_numbers = crud.read_phone_numbers_by_profile_id(db=db, profile_id=profile_id)
+    if not results_phone_numbers:
+        return Returns.NULL
     results_images        = crud.read_images_by_profile_id(db=db, profile_id=profile_id)
+    if not results_images:
+        return Returns.NULL
     results_galleries     = crud.read_galleries_by_profile_id(db=db, profile_id=profile_id)
+    if not results_galleries:
+        return Returns.NULL
     results_posts         = crud.read_posts_by_profile_id(db=db, profile_id=profile_id)
+    if not results_posts:
+        return Returns.NULL
     results_certificates  = crud.read_certificates_by_profile_id(db=db, profile_id=profile_id)
+    if not results_certificates:
+        return Returns.NULL
     results_promo_codes   = crud.read_promo_codes_by_profile_id(db=db, profile_id=profile_id)
+    if not results_promo_codes:
+        return Returns.NULL
     results_tenants       = crud.read_tenants_by_profile_id(db=db, profile_id=profile_id)
+    if not results_tenants:
+        return Returns.NULL
     results_tags          = crud.read_tags_by_profile_id(db=db, profile_id=profile_id)
+    if not results_tags:
+        return Returns.NULL
     results_categories    = crud.read_category_by_profile_id(db=db, profile_id=profile_id)
+    if not results_categories:
+        return Returns.NULL
     results_ads           = crud.read_ads_by_join_category_id(db=db, profile_id=profile_id)
+    if not results_ads:
+        return Returns.NULL
     results = {}
     results["profile"]       = result_profile
     results["promotions"]    = results_promotion

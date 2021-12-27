@@ -1,8 +1,9 @@
 FROM python:3.7.0
 
-COPY ./requirements.txt /
+COPY ./ /app
+COPY ./requirements.txt /app
 
-WORKDIR /
+WORKDIR /app
 
 RUN pip install -r requirements.txt
 

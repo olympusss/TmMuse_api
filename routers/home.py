@@ -9,9 +9,17 @@ home_router = APIRouter()
 @home_router.get("/get-home")
 def get_home(db: Session = Depends(get_db)):
     get_banner    = crud.read_banner(db=db)
+    if not get_banner:
+        return Returns.NULL
     get_movie     = crud.read_movies(db=db)
+    if not get_movie:
+        return Returns.NULL
     get_promotion = crud.read_promotions(db=db)
+    if not get_promotion:
+        return Returns.NULL
     get_ads       = crud.read_ads(db=db)
+    if not get_ads:
+        return Returns.NULL
     newList = []
     for elem in get_ads:
         get_categories = crud.read_categories_by_ads(db=db, ads_id=elem.id)
