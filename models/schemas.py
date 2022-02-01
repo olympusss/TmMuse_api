@@ -1,9 +1,6 @@
 from pydantic import BaseModel
 from typing import List
 
-from db.connection import Base
-
-
 class PhoneVerify(BaseModel):
     phone_number    : str
     

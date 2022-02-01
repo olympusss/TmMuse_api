@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import asc, desc, and_, or_
+from sqlalchemy import and_, or_, desc, asc
 from models import (
     Users, CodeVerify, InterestItems, Interests, UserInterests, Banners, 
     Categories, PhoneNumbers, PromotionStatuses, Images, Profiles, Ads, 
     JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
-    Certificates, PromoCodes, Tenants, Inbox, SendUser, Answers, AnsweredMessages,
+    Certificates, PromoCodes, Inbox, SendUser, Answers, AnsweredMessages,
     CardUsers, Jobs, CreateCardUsers, Constants, CreateInbox, AddCertificate,
     Search, SearchHistory
 )
@@ -278,7 +278,6 @@ def read_profile_by_profile_id(db: Session, profile_id):
         Profiles.descriptionRU,
         Profiles.order_in_list,
         Profiles.free_time,
-        Profiles.tenants_id,
         Profiles.is_cash,
         Profiles.is_terminal
     ).filter(Profiles.id == profile_id)
@@ -363,24 +362,8 @@ def read_promo_codes_by_profile_id(db: Session, profile_id):
         return result.all()
     else:
         return False
+
     
-def read_tenants_by_profile_id(db: Session, profile_id):
-    result = db.query(
-        Tenants.id,
-        Tenants.name,
-        Tenants.login,
-        Tenants.password,
-        Tenants.email,
-        Tenants.phone_number,
-        Tenants.comment_of_admin
-    )
-    result = result.join(Profiles, Profiles.tenants_id == Tenants.id)
-    result = result.filter(Profiles.id == profile_id)
-    if result:
-        return result.all()
-    else:
-        return False
-        
 def read_tags_by_profile_id(db: Session, profile_id):
     result = db.query(
         Tags.id,
@@ -411,7 +394,8 @@ def read_category_by_profile_id(db: Session, profile_id):
 def read_ads_by_join_category_id(db: Session, profile_id):
     result = db.query(
         Ads.id,
-        Ads.name,
+        Ads.nameTM,
+        Ads.nameRU,
         Ads.comment_of_admin,
         Ads.image,
         Ads.profile_id,
@@ -561,7 +545,7 @@ def create_inbox(db: Session, req: CreateInbox):
         return False
     
 def read_inbox_by_title_and_message(db: Session, title, message):
-    result = db.query(Inbox.id).filter(Inbox.title == title, Inbox.message == message).first()
+    result = db.query(Inbox.id).filter(and_(Inbox.title == title, Inbox.message == message)).first()
     if result:
         return result
     else:
