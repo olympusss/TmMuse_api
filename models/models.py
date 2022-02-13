@@ -231,6 +231,8 @@ class Posts(Base):
     image              = Column(String)
     promotion          = Column(Float)
     view_count         = Column(Integer)
+    like               = Column(Integer)
+    dislike            = Column(Integer)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
