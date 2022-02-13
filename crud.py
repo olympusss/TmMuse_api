@@ -822,6 +822,8 @@ def delete_number_socket(db: Session, phone_number):
 def read_user_id_from_token(db: Session, header_param: Request):
     token = check_token(header_param=header_param)
     payload = decode_token(token=token)
+    if not payload:
+        return False
     phone_number: str = payload.get("phone_number")
     result = read_user_by_phone_number(db=db, phone_number=phone_number)
     if result:

@@ -36,6 +36,8 @@ def add_user_interest(header_param: Request, req: AddUserInterest, db: Session =
 @interest_router.get("/get-user-interests", dependencies=[Depends(HTTPBearer())])
 def get_user_interest(header_param: Request, db: Session = Depends(get_db)):
     user_id = crud.read_user_id_from_token(db=db, header_param=header_param)
+    if not user_id:
+        return Returns.USER_NOT_FOUND
     result = crud.read_interest_items_by_user_id(db=db, user_id=user_id)
     if result:
         return Returns.object(result)
