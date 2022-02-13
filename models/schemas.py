@@ -10,6 +10,7 @@ class PhoneVerify(BaseModel):
 class CodeVerify(BaseModel):
     fullname        : str
     phone_number    : str
+    code            : str
     
     class Config:
         orm_mode = True
@@ -22,9 +23,9 @@ class AddUserInterest(BaseModel):
         orm_mode = True
         
 class GetProfile(BaseModel):
-    category        : List[int]
+    category        : List[int] = []
     sort            : int
-    tags_id         : List[int]
+    tags_id         : List[int] = []
     limit           : int
     page            : int
     
@@ -34,11 +35,9 @@ class GetProfile(BaseModel):
 class CreateCardUsers(BaseModel):
     date            : str
     gender          : int
-    passport_info   : str
     email           : str
     is_sms          : bool
     status          : int
-    job_id          : int
     
     class Config:
         orm_mode = True

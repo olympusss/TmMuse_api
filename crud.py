@@ -1,17 +1,21 @@
+from imp import get_tag
+from fastapi import Request
+from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, desc, asc
+from sqlalchemy import and_, or_, desc, asc, func
 from models import (
     Users, CodeVerify, InterestItems, Interests, UserInterests, Banners, 
     Categories, PhoneNumbers, PromotionStatuses, Images, Profiles, Ads, 
     JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
     Certificates, PromoCodes, Inbox, SendUser, Answers, AnsweredMessages,
-    CardUsers, Jobs, CreateCardUsers, Constants, CreateInbox, AddCertificate,
-    Search, SearchHistory
+    CardUsers, CreateCardUsers, Constants, CreateInbox, AddCertificate,
+    Search, SearchHistory, NumberSocket, PhoneVerify
 )
-from tokens import create_access_token
+from tokens import create_access_token, check_token, decode_token
 from datetime import datetime
 from translation import translation2TM, translation2RU
 import random
+from typing import List
 
 def read_all_users(db: Session):
     result = db.query(
@@ -74,9 +78,9 @@ def read_interest_items_by_interest_id(db: Session, interest_id):
         InterestItems.titleRU
     ).filter(InterestItems.interest_id == interest_id).all()
     if result:
-        return True
+        return result
     else:
-        return False
+        return None
     
     
 def create_user_interest_item(db: Session, user_id, item_id):
@@ -105,7 +109,7 @@ def read_banner(db: Session):
         Banners.order,
         Banners.link,
         Banners.profile_id
-    ).all()
+    ).order_by(desc(Banners.order)).all()
     if result:
         return result
     else:
@@ -113,6 +117,7 @@ def read_banner(db: Session):
 
 def read_movies(db: Session):
     result = db.query(
+        Profiles.id,
         Profiles.nameTM,
         Profiles.nameRU,
         Profiles.short_descTM,
@@ -127,26 +132,33 @@ def read_movies(db: Session):
     else:
         return False
 
-def read_promotions(db: Session):
+def read_promotions(db: Session, page):
+
     result = db.query(
-        PromotionStatuses.id,
-        PromotionStatuses.promotion_status,
-        Profiles.id,
-        Profiles.nameTM,
-        Profiles.nameRU,
-        Profiles.short_descTM,
-        Profiles.short_descRU,
+        Posts.id,
+        Posts.titleTM,
+        Posts.titleRU,
+        Posts.descriptionTM,
+        Posts.descriptionRU,
+        Posts.comment_of_admin,
+        Posts.status,
+        Posts.image,
+        Posts.promotion,
+        Posts.view_count,
+        Posts.like,
+        Posts.dislike,
+        Posts.profile_id,
         Profiles.instagram,
-        Profiles.site,
-        Profiles.like,
-        Profiles.dislike,
-        Images.small_image,
-        Images.large_image,
-        PhoneNumbers.phone_number
-    ).join(Profiles, Profiles.id == PromotionStatuses.profile_id).\
-        join(Images, and_(Images.profile_id == Profiles.id, Images.isVR == False)).\
-            join(PhoneNumbers, PhoneNumbers.profile_id == Profiles.id).\
-                order_by(desc(PromotionStatuses.updated_at)).all()
+    )
+    result = result.join(Profiles, Profiles.id == Posts.profile_id)
+    result = result.offset(20 * (page-1)).limit(20).all()
+    new_list = []
+    for res in result:
+        res_dict = dict(res)
+        phone_numbers = read_phone_numbers_by_profile_id(db=db, profile_id=res.profile_id)
+        res_dict["numbers"] = list(phone_numbers)
+        new_list.append(res_dict)
+    result = new_list
     if result:
         return result
     else:
@@ -155,7 +167,8 @@ def read_promotions(db: Session):
 def read_ads(db: Session):
     result = db.query(
         Ads.id,
-        Ads.name,
+        Ads.nameTM,
+        Ads.nameRU,
         Ads.comment_of_admin,
         Ads.image,
         Ads.profile_id,
@@ -203,20 +216,33 @@ def read_profile(db: Session, req: GetProfile):
         Profiles.instagram,
         Profiles.site,
         Profiles.status,
-        Images.small_image,
-        Images.large_image,
-        PhoneNumbers.phone_number
+        Profiles.is_VIP,
+        Profiles.category_id
     )
-    result = result.join(Images, Images.profile_id == Profiles.id)
-    result = result.join(PhoneNumbers, PhoneNumbers.profile_id == Profiles.id)
-    result = result.join(TagProducts, TagProducts.profile_id == Profiles.id)
-    result = result.join(Categories, Categories.id == Profiles.category_id)
-    result = result.filter(or_(TagProducts.tags_id == elem for elem in req.tags_id))
-    result = result.filter(or_(Categories.id == elem for elem in req.category))
+    if len(req.tags_id) > 0:
+        result = result.join(TagProducts, TagProducts.profile_id == Profiles.id)
+        result = result.filter(or_(TagProducts.tags_id == elem for elem in req.tags_id))
+    if len(req.category) > 0:
+        result = result.join(Categories, Categories.id == Profiles.category_id)
+        result = result.filter(or_(Categories.id == elem for elem in req.category))
+    result = result.filter(Profiles.status != 0)
     result = result.order_by(sorting)
-    result = result.order_by(desc(Profiles.status))
+    result = result.order_by(desc(Profiles.is_VIP))
+    result = result.offset(req.limit * (req.page - 1)).limit(req.limit)
+    result = result.distinct().all()
+    new_list = []
+    for res in result:
+        res = dict(res)
+        get_images = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
+        get_phone_number = read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
+        if get_images:
+            res["image"] = get_images
+        if get_phone_number:
+            res["phone_numbers"] = get_phone_number
+        new_list.append(res)
+    result = new_list
     if result:
-        return result.all()
+        return result
     else:
         return False
 
@@ -231,18 +257,19 @@ def read_promotion_by_profile_id(db: Session, profile_id):
     else:
         return False
     
-def read_ads_by_category_id(db: Session, req: GetProfile):
+def read_ads_random(db: Session):
     result = db.query(
         Ads.id,
-        Ads.name,
+        Ads.nameTM,
+        Ads.nameRU,
         Ads.comment_of_admin,
         Ads.image,
         Ads.profile_id,
-        Ads.is_main
+        Ads.is_main,
+        Ads.site_url
     )
-    result = result.join(JoinCategoryAds, JoinCategoryAds.ads_id == Ads.id)
-    result = result.join(Categories, Categories.id == JoinCategoryAds.category_id)
-    result = result.filter(or_(Categories.id == elem for elem in req.category))
+    result = result.filter(Ads.is_main == False)
+    result = result.order_by(func.random())
     if result:
         return result.all()
     else:
@@ -290,7 +317,6 @@ def read_phone_numbers_by_profile_id(db: Session, profile_id):
     result = db.query(
         PhoneNumbers.id,
         PhoneNumbers.phone_number,
-        PhoneNumbers.profile_id
     ).filter(PhoneNumbers.profile_id == profile_id)
     if result:
         return result.all()
@@ -303,7 +329,6 @@ def read_images_by_profile_id(db: Session, profile_id):
         Images.small_image,
         Images.large_image,
         Images.isVR,
-        Images.profile_id
     ).filter(Images.profile_id == profile_id)
     if result:
         return result.all()
@@ -373,11 +398,22 @@ def read_tags_by_profile_id(db: Session, profile_id):
     )
     result = result.join(TagProducts, TagProducts.tags_id == Tags.id)
     result = result.join(Profiles, Profiles.id == TagProducts.profile_id)
-    result = result.filter(Profiles.id == profile_id)
+    result = result.filter(Profiles.id == profile_id).all()
     if result:
-        return result.all()
+        return result
     else:
         return False
+    
+def read_tags_by_category_id(db: Session, category_id):
+    result = db.query(
+        Tags.id,
+        Tags.tagTM,
+        Tags.tagRU
+    ).filter(Tags.category_id == category_id).all()
+    if result:
+        return result
+    else:
+        return []
     
 def read_category_by_profile_id(db: Session, profile_id):
     result = db.query(
@@ -401,10 +437,7 @@ def read_ads_by_join_category_id(db: Session, profile_id):
         Ads.profile_id,
         Ads.is_main
     )
-    result = result.join(JoinCategoryAds, JoinCategoryAds.ads_id == Ads.id)
-    result = result.join(Categories, Categories.id == JoinCategoryAds.category_id)
-    result = result.join(Profiles, Profiles.category_id == Categories.id)
-    result = result.filter(Profiles.id == profile_id)
+    result = result.filter(Ads.profile_id == profile_id)
     if result:
         return result.all()
     else:
@@ -457,16 +490,7 @@ def read_answered_messages_by_user_id(db: Session, user_id):
         return result.all()
     else:
         return False
-    
-def read_all_jobs(db: Session):
-    result = db.query(
-        Jobs.nameTM,
-        Jobs.nameRU
-    ).all()
-    if result:
-        return result
-    else:
-        return False
+
     
 def read_profile_card_promotion(db: Session, limit, page):
     result = db.query(
@@ -480,15 +504,21 @@ def read_profile_card_promotion(db: Session, limit, page):
         Profiles.dislike,
         Profiles.instagram,
         Profiles.site,
-        Images.small_image,
-        Images.large_image,
-        PhoneNumbers.phone_number
     )
-    result = result.join(Images, Images.profile_id == Profiles.id)
-    result = result.join(PhoneNumbers, PhoneNumbers.profile_id == Profiles.id)
-    result = result.filter(Profiles.is_active_card == True)
+    result = result.filter(Profiles.tm_muse_card > 0)
     result = result.order_by(desc(Profiles.updated_at))
     result = result.offset(limit * (page - 1)).limit(limit).all()
+    new_list = []
+    for res in result:
+        res = dict(res)
+        get_images = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
+        get_phone_number = read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
+        if get_images:
+            res["image"] = get_images
+        if get_phone_number:
+            res["phone_numbers"] = get_phone_number
+        new_list.append(res)
+    result = new_list
     if result:
         return result
     else:
@@ -497,17 +527,15 @@ def read_profile_card_promotion(db: Session, limit, page):
 def create_card_user(db: Session, req: CreateCardUsers, userID):
     cardID = random.randrange(1000000000, 9999999999)
     cardID = str(cardID)
-    str2date = datetime.strptime(req.date, '%d/%m/%y')
+    str2date = datetime.strptime(req.date, '%d/%m/%Y')
     new_add = CardUsers(
         date_of_birth = str2date,
         gender        = req.gender,
-        passport_info = req.passport_info,
         email         = req.email,
         is_sms        = req.is_sms,
         status        = req.status,
         card_id       = cardID,
         user_id       = userID,
-        job_id        = req.job_id
     )
     db.add(new_add)
     db.commit()
@@ -568,9 +596,9 @@ def create_send_user(db: Session, userID, inboxID):
     
 def read_profile_by_profile_id_filter_is_promo(db: Session, profile_id):
     result = db.query(
-        Profiles.id
-    ).filter(Profiles.is_promo == True).all()
-    if result:
+        Profiles.is_promo
+    ).filter(Profiles.id == profile_id).first()
+    if result.is_promo:
         return True
     else:
         return False
@@ -625,11 +653,16 @@ def create_promo_code(db: Session, profileID, userID):
     db.commit()
     db.refresh(new_add)
     if new_add:
-        return True
+        return generated_promo_code
     else:
         return False
     
 def create_certificates(db: Session, req: AddCertificate, userID):
+    get_profile = db.query(
+        Profiles.is_certificate
+    ).filter(Profiles.id == req.profile_id).first()
+    if not get_profile.is_certificate:
+        return False
     new_add = Certificates(
         amount     = req.amount,
         profile_id = req.profile_id,
@@ -683,7 +716,7 @@ def create_send_user(db: Session, userID, inboxID):
         return False
     
     
-def search_profile_by_like(db: Session, req: Search):
+def search_profile_by_like(db: Session, req: Search, page, limit):
     result = db.query(
         Profiles.id,
         Profiles.nameTM,
@@ -695,14 +728,7 @@ def search_profile_by_like(db: Session, req: Search):
         Profiles.instagram,
         Profiles.site,
         Profiles.status,
-        Images.small_image,
-        Images.large_image,
-        PhoneNumbers.phone_number
     )
-    result = result.join(Images, Images.profile_id == Profiles.id)
-    result = result.join(PhoneNumbers, PhoneNumbers.profile_id == Profiles.id)
-    result = result.join(TagProducts, TagProducts.profile_id == Profiles.id)
-    result = result.join(Categories, Categories.id == Profiles.category_id)
     result = result.filter(
         or_(
             Profiles.nameTM.like(f"%{req.text}%"),
@@ -710,8 +736,20 @@ def search_profile_by_like(db: Session, req: Search):
             Profiles.nameRU.like(f"%{req.text}%"),
             Profiles.nameRU.like(f"%{(req.text).translate(translation2RU)}%")
             ))
+    result = result.offset(20 * (page-1)).limit(20).all()
+    new_list = []
+    for res in result:
+        res = dict(res)
+        get_images = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
+        get_phone_number = read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
+        if get_images:
+            res["image"] = get_images
+        if get_phone_number:
+            res["phone_numbers"] = get_phone_number
+        new_list.append(res)
+    result = new_list
     if result:
-        return result.all()
+        return result
     else:
         return False
     
@@ -733,11 +771,92 @@ def create_search_history(db: Session, txt):
         db.refresh(new_add)
     return True
 
-def read_search_history(db: Session, txt):
+def read_search_history(db: Session):
     result = db.query(
         SearchHistory.text,
-    ).filter(SearchHistory.text == txt).order_by(desc(SearchHistory.count)).all()
+    ).order_by(desc(SearchHistory.count)).limit(20).all()
     if result:
         return result
+    else:
+        return False
+    
+    
+def create_number_socket(db: Session, number: PhoneVerify, code):
+    new_add = NumberSocket(
+        phone_number = number.phone_number,
+        code         = code,
+        created_at   = datetime.now(),
+        updated_at   = datetime.now()
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
+    else:
+        return False
+    
+    
+def read_phone_number_and_code(db: Session, phone_number, code):
+    result = db.query(
+        NumberSocket.phone_number,
+        NumberSocket.code,
+        NumberSocket.created_at
+    )\
+    .filter(and_(NumberSocket.phone_number == phone_number, NumberSocket.code == code))\
+    .first()
+    if result:
+        return result
+    else:
+        return False
+    
+def delete_number_socket(db: Session, phone_number):
+    new_delete = db.query(NumberSocket)\
+    .filter(NumberSocket.phone_number == phone_number)\
+    .delete(synchronize_session=False)
+    db.commit()
+    if new_delete:
+        return True
+    else:
+        return False
+    
+    
+def read_user_id_from_token(db: Session, header_param: Request):
+    token = check_token(header_param=header_param)
+    payload = decode_token(token=token)
+    phone_number: str = payload.get("phone_number")
+    result = read_user_by_phone_number(db=db, phone_number=phone_number)
+    if result:
+        return result.id
+    else:
+        return False
+    
+    
+def read_interest_items_by_user_id(db: Session, user_id):
+    result = db.query(
+        InterestItems.id,
+        InterestItems.titleTM,
+        InterestItems.titleRU,
+        InterestItems.interest_id
+    )
+    result = result.join(UserInterests, UserInterests.interest_item_id == InterestItems.id)
+    result = result.filter(UserInterests.user_id == user_id).all()
+    if result:
+        return result
+    else:
+        return False
+    
+    
+def read_images_by_profile_id_isVR_false(db: Session, profile_id):
+    result = db.query(
+        Images.id,
+        Images.small_image,
+        Images.large_image,
+        Images.isVR
+    )
+    result = result.filter(Images.profile_id == profile_id)
+    result = result.filter(Images.isVR == False)
+    if result:
+        return result.first()
     else:
         return False

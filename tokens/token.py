@@ -1,7 +1,5 @@
 from jose import jwt
 from fastapi import Request
-from tokens import Returns
-from models import Users
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
@@ -21,7 +19,7 @@ def decode_token(token: str):
 
 
 def check_token(header_param: Request):
-    token = header_param.headers.get('WWW-Authentication')
+    token = header_param.headers.get('Authorization')
     if not token:
         return False
     elif token == "Bearer":

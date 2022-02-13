@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, Float, Boolean, ForeignKey
+from sqlalchemy import Column, String, Integer, DateTime, Float, Boolean, ForeignKey, Date
 from datetime import datetime
 from sqlalchemy.orm import relationship
 from db import Base
@@ -9,7 +9,7 @@ class Users(Base):
     fullname           = Column(String)
     phone_number       = Column(String)
     token              = Column(String)
-    notif_token        = Column(Integer)
+    notif_token        = Column(String)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     users_userinterests = relationship("UserInterests", back_populates="userinterests_users")
@@ -131,6 +131,7 @@ class Profiles(Base):
     is_active_card     = Column(Boolean, default=False)
     tm_muse_card       = Column(Float)
     is_certificate     = Column(Boolean, default=False)
+    is_VIP             = Column(Boolean, default=False)
     is_promo           = Column(Boolean, default=False)
     status             = Column(Integer)
     category_id        = Column(Integer, ForeignKey("categories.id"))
@@ -229,6 +230,8 @@ class Posts(Base):
     image              = Column(String)
     promotion          = Column(Float)
     view_count         = Column(Integer)
+    like               = Column(Integer)
+    dislike            = Column(Integer)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
@@ -309,29 +312,17 @@ class Answers(Base):
 class CardUsers(Base):
     __tablename__      = "card_users"
     id                 = Column(Integer, primary_key=True, index=True)
-    date_of_birth      = Column(DateTime)
+    date_of_birth      = Column(Date)
     gender             = Column(Integer)
-    passport_info      = Column(String)
     email              = Column(String)
     is_sms             = Column(Boolean)
     status             = Column(Integer)
     card_id            = Column(String)
     user_id            = Column(Integer, ForeignKey("users.id"))
-    job_id             = Column(Integer, ForeignKey("jobs.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     cardusers_users    = relationship("Users", back_populates="users_cardusers")
-    cardusers_jobs     = relationship("Jobs", back_populates="jobs_cardusers")
     
-    
-class Jobs(Base):
-    __tablename__      = "jobs"
-    id                 = Column(Integer, primary_key=True, index=True)
-    nameTM             = Column(String)
-    nameRU             = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
-    jobs_cardusers     = relationship("CardUsers", back_populates="cardusers_jobs")
    
     
 class Constants(Base):
@@ -391,3 +382,11 @@ class PopUp(Base):
     updated_at         = Column(DateTime, default=datetime.now())
     popup_profiles     = relationship("Profiles", back_populates="profiles_popup")
     
+    
+class NumberSocket(Base):
+    __tablename__      = "number_socket"
+    id                 = Column(Integer, primary_key=True, index=True)
+    phone_number       = Column(String)
+    code               = Column(String)
+    created_at         = Column(DateTime, default=datetime.now())
+    updated_at         = Column(DateTime, default=datetime.now())

@@ -7,34 +7,16 @@ from tokens import Returns
 home_router = APIRouter()
 
 @home_router.get("/get-home")
-def get_home(db: Session = Depends(get_db)):
-    get_banner    = crud.read_banner(db=db)
-    if not get_banner:
-        return Returns.NULL
-    get_movie     = crud.read_movies(db=db)
-    if not get_movie:
-        return Returns.NULL
-    get_promotion = crud.read_promotions(db=db)
-    if not get_promotion:
-        return Returns.NULL
-    get_ads       = crud.read_ads(db=db)
-    if not get_ads:
-        return Returns.NULL
-    newList = []
-    for elem in get_ads:
-        get_categories = crud.read_categories_by_ads(db=db, ads_id=elem.id)
-        text = []
-        for elems in get_categories:
-            text.append(elems)
-        elem = dict(elem)
-        elem["categories"] = text
-        newList.append(elem)
-    get_ads = newList
+def get_home(page: int, db: Session = Depends(get_db)):
     result = {}
-    result["banners"] = get_banner
-    result["new_movies"] = get_movie
-    result["promotions"] = get_promotion
-    result["ads"] = get_ads
+    if page == 1:
+        result["banners"] = crud.read_banner(db=db)
+        result["new_movies"] = crud.read_movies(db=db)
+        result["promotions"] = crud.read_promotions(db=db, page=page)
+        result["ads"] = crud.read_ads(db=db)
+    else:
+        result["promotions"] = crud.read_promotions(db=db, page=page)
+        
     if result:
         return Returns.object(result)
     else:
