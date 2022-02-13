@@ -211,7 +211,7 @@ class TagProducts(Base):
 class Galleries(Base):
     __tablename__      = "galleries"
     id                 = Column(Integer, primary_key=True, index=True)
-    medium_image       = Column(String, default="")
+    medium_image       = Column(String)
     large_image        = Column(String)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     created_at         = Column(DateTime, default=datetime.now())
@@ -231,8 +231,6 @@ class Posts(Base):
     image              = Column(String)
     promotion          = Column(Float)
     view_count         = Column(Integer)
-    like               = Column(Integer)
-    dislike            = Column(Integer)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
@@ -323,6 +321,7 @@ class CardUsers(Base):
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     cardusers_users    = relationship("Users", back_populates="users_cardusers")
+    
     
    
     

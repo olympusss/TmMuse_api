@@ -145,8 +145,6 @@ def read_promotions(db: Session, page):
         Posts.image,
         Posts.promotion,
         Posts.view_count,
-        Posts.like,
-        Posts.dislike,
         Posts.profile_id,
         Profiles.instagram,
     )

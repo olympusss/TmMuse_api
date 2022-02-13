@@ -21,3 +21,4 @@ def get_home(page: int, db: Session = Depends(get_db)):
         return Returns.object(result)
     else:
         return Returns.NULL
+    
