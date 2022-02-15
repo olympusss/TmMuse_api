@@ -355,7 +355,14 @@ def read_posts_by_profile_id(db: Session, profile_id):
         Posts.titleRU,
         Posts.image,
         Posts.promotion,
-        Posts.profile_id
+        Posts.profile_id,
+        Posts.descriptionTM,
+        Posts.descriptionRU,
+        Posts.comment_of_admin,
+        Posts.status,
+        Posts.view_count,
+        Posts.like,
+        Posts.dislike
     ).filter(Posts.profile_id == profile_id)
     if result:
         return result.all()
