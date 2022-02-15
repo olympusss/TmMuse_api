@@ -307,9 +307,9 @@ def read_profile_by_profile_id(db: Session, profile_id):
         Profiles.free_time,
         Profiles.is_cash,
         Profiles.is_terminal
-    ).filter(Profiles.id == profile_id)
+    ).filter(Profiles.id == profile_id).first()
     if result:
-        return result.first()
+        return result
     else:
         return False
     

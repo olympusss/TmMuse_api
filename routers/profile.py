@@ -45,51 +45,40 @@ def get_profile(req: GetProfile, db: Session = Depends(get_db)):
     
 @profile_router.get("/get-profile-tiny")
 def get_profile_tiny(profile_id: int, db: Session = Depends(get_db)):
-    result_profile        = crud.read_profile_by_profile_id(db=db, profile_id=profile_id)
-    if not result_profile:
-        return 1
-    results_promotion     = crud.read_promotion_by_profile_id(db=db, profile_id=profile_id)
-    if not results_promotion:
-        return 2
-    results_phone_numbers = crud.read_phone_numbers_by_profile_id(db=db, profile_id=profile_id)
-    if not results_phone_numbers:
-        return 3
-    results_images        = crud.read_images_by_profile_id(db=db, profile_id=profile_id)
-    if not results_images:
-        return 4
-    results_galleries     = crud.read_galleries_by_profile_id(db=db, profile_id=profile_id)
-    if not results_galleries:
-        return 5
-    results_posts         = crud.read_posts_by_profile_id(db=db, profile_id=profile_id)
-    if not results_posts:
-        return 6
-    results_certificates  = crud.read_certificates_by_profile_id(db=db, profile_id=profile_id)
-    if not results_certificates:
-        return 7
-    results_promo_codes   = crud.read_promo_codes_by_profile_id(db=db, profile_id=profile_id)
-    if not results_promo_codes:
-        return 8
-    results_tags          = crud.read_tags_by_profile_id(db=db, profile_id=profile_id)
-    if not results_tags:
-        return 9
-    results_categories    = crud.read_category_by_profile_id(db=db, profile_id=profile_id)
-    if not results_categories:
-        return 10
-    results_ads           = crud.read_ads_by_join_category_id(db=db, profile_id=profile_id)
-    if not results_ads:
-        return 11
     results = {}
-    results["profile"]       = result_profile
-    results["promotions"]    = results_promotion
-    results["phone_numbers"] = results_phone_numbers
-    results["images"]        = results_images
-    results["galleries"]     = results_galleries
-    results["posts"]         = results_posts
-    results["certificates"]  = results_certificates
-    results["promo_codes"]   = results_promo_codes
-    results["tags"]          = results_tags
-    results["categories"]    = results_categories
-    results["ads"]           = results_ads
+    result_profile = crud.read_profile_by_profile_id(db=db, profile_id=profile_id)
+    if result_profile:
+        results["profile"] = result_profile
+    results_promotion = crud.read_promotion_by_profile_id(db=db, profile_id=profile_id)
+    if results_promotion:
+        results["promotions"] = results_promotion
+    results_phone_numbers = crud.read_phone_numbers_by_profile_id(db=db, profile_id=profile_id)
+    if results_phone_numbers:
+        results["phone_numbers"] = results_phone_numbers
+    results_images = crud.read_images_by_profile_id(db=db, profile_id=profile_id)
+    if results_images:
+        results["images"]        = results_images
+    results_galleries = crud.read_galleries_by_profile_id(db=db, profile_id=profile_id)
+    if results_galleries:
+        results["galleries"]     = results_galleries
+    results_posts = crud.read_posts_by_profile_id(db=db, profile_id=profile_id)
+    if results_posts:
+        results["posts"]         = results_posts
+    results_certificates = crud.read_certificates_by_profile_id(db=db, profile_id=profile_id)
+    if results_certificates:
+        results["certificates"]  = results_certificates
+    results_promo_codes = crud.read_promo_codes_by_profile_id(db=db, profile_id=profile_id)
+    if results_promo_codes:
+        results["promo_codes"]   = results_promo_codes
+    results_tags = crud.read_tags_by_profile_id(db=db, profile_id=profile_id)
+    if results_tags:
+        results["tags"]          = results_tags
+    results_categories = crud.read_category_by_profile_id(db=db, profile_id=profile_id)
+    if results_categories:
+        results["categories"]    = results_categories
+    results_ads = crud.read_ads_by_join_category_id(db=db, profile_id=profile_id)
+    if results_ads:
+        results["ads"]           = results_ads
     if results:
         return Returns.object(results)
     else:
