@@ -24,6 +24,7 @@ from models.models import CardUsers
 from models.models import Constants
 from models.models import SearchHistory
 from models.models import NumberSocket
+from models.models import TicketBron
 
 
 from models.schemas import PhoneVerify
@@ -35,3 +36,4 @@ from models.schemas import CreateInbox
 from models.schemas import GetPromoCodes
 from models.schemas import AddCertificate
 from models.schemas import Search
+from models.schemas import Ticket_insert_schema

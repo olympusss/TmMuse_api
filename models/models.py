@@ -17,6 +17,8 @@ class Users(Base):
     users_promocodes    = relationship("PromoCodes"   , back_populates="promocodes_users")
     users_senduser      = relationship("SendUser"     , back_populates="senduser_users")
     users_cardusers     = relationship("CardUsers"    , back_populates="cardusers_users")
+    users_ticketbron    = relationship("TicketBron"   , back_populates="ticketbron_users")
+    
     
     
     
@@ -132,7 +134,7 @@ class Profiles(Base):
     is_active_card     = Column(Boolean, default=False)
     tm_muse_card       = Column(Float)
     is_certificate     = Column(Boolean, default=False)
-    is_VIP             = Column(Boolean)
+    is_VIP             = Column(Integer)
     is_promo           = Column(Boolean, default=False)
     WiFi               = Column(Boolean)
     status             = Column(Integer)
@@ -163,6 +165,8 @@ class Profiles(Base):
     profiles_profileview       = relationship("ProfileView"         , back_populates="profileview_profiles")
     profiles_ads2profile       = relationship("Ads2Profile_count"   , back_populates="ads2profile_profiles")
     profiles_adsview           = relationship("AdsView"             , back_populates="adsview_profiles")
+    profiles_ticketbron        = relationship("TicketBron"          , back_populates="ticketbron_profiles")
+    
 
 
 
@@ -340,6 +344,8 @@ class Constants(Base):
     titleRU            = Column(String)
     contentTM          = Column(String)
     contentRU          = Column(String)
+    contentTM_dark     = Column(String)
+    contentRU_dark     = Column(String)
     type               = Column(String)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
@@ -363,7 +369,9 @@ class Admin(Base):
     type               = Column(Integer, ForeignKey('admin_type.id'))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    admin_admintype    = relationship('AdminType', back_populates='admintype_admin')
+    admin_admintype    = relationship('AdminType'   , back_populates='admintype_admin')
+    admin_ticketbron   = relationship("TicketBron"  , back_populates="ticketbron_admin")
+    
     
     
 class AdminType(Base):
@@ -439,3 +447,21 @@ class AppVisitors(Base):
     user_id            = Column(Integer)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
+  
+    
+class TicketBron(Base):
+    __tablename__       = "ticket_bron"
+    id                  = Column(Integer, primary_key=True, index=True)
+    cinema_id           = Column(Integer, ForeignKey("admin.id"))
+    profile_id          = Column(Integer, ForeignKey("profiles.id"))
+    user_id             = Column(Integer, ForeignKey("users.id"))
+    movie_date          = Column(DateTime)
+    ticket_count        = Column(Integer)
+    ticket_price        = Column(Float)
+    ticket_discount     = Column(Float)
+    status              = Column(Integer)
+    created_at          = Column(DateTime, default=datetime.now())
+    updated_at          = Column(DateTime, default=datetime.now())
+    ticketbron_admin    = relationship("Admin"      , back_populates="admin_ticketbron")
+    ticketbron_profiles = relationship("Profiles"   , back_populates="profiles_ticketbron")
+    ticketbron_users    = relationship("Users"      , back_populates="users_ticketbron")

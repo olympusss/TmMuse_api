@@ -9,13 +9,14 @@ from models import (
     JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
     Certificates, PromoCodes, Inbox, SendUser, Answers, AnsweredMessages,
     CardUsers, CreateCardUsers, Constants, CreateInbox, AddCertificate,
-    Search, SearchHistory, NumberSocket, PhoneVerify
+    Search, SearchHistory, NumberSocket, PhoneVerify, Ticket_insert_schema,
+    TicketBron
 )
 from tokens import create_access_token, check_token, decode_token
 from datetime import datetime
 from translation import translation2TM, translation2RU
 import random
-from typing import List
+from datetime import datetime
 
 def read_all_users(db: Session):
     result = db.query(
@@ -29,7 +30,7 @@ def read_all_users(db: Session):
     if result:
         return result
     else:
-        return False
+        return None
 
 def read_user_by_phone_number(db: Session, phone_number: str):
     result = db.query(
@@ -41,7 +42,7 @@ def read_user_by_phone_number(db: Session, phone_number: str):
     if result:
         return result
     else:
-        return False
+        return None
 
 def create_user(db: Session, req: CodeVerify):
     newDict = {
@@ -60,7 +61,7 @@ def create_user(db: Session, req: CodeVerify):
     if new_add:
         return True
     else:
-        return False
+        return None
     
     
 def read_interests(db: Session):
@@ -91,16 +92,16 @@ def create_user_interest_item(db: Session, user_id, item_id):
     if new_add:
         return True
     else:
-        return False
+        return None
     
 def delete_user_interest(db: Session, user_id):
     delete = db.query(UserInterests).filter(UserInterests.user_id == user_id).\
-        delete(synchronize_session=False)
+        delete(synchronize_session=None)
     db.commit()
     if delete:
         return True
     else:
-        return False
+        return None
     
 def read_banner(db: Session):
     result = db.query(
@@ -113,7 +114,7 @@ def read_banner(db: Session):
     if result:
         return result
     else:
-        return False
+        return None
 
 def read_movies(db: Session):
     result = db.query(
@@ -123,14 +124,14 @@ def read_movies(db: Session):
         Profiles.short_descTM,
         Profiles.short_descRU,
         Images.small_image
-    ).join(Images, and_(Images.profile_id == Profiles.id, Images.isVR == False)).\
+    ).join(Images, and_(Images.profile_id == Profiles.id, Images.isVR == None)).\
         filter(Profiles.category_id == 2).\
             order_by(desc(Profiles.updated_at)).\
                 limit(20).all()
     if result:
         return result
     else:
-        return False
+        return None
 
 def read_promotions(db: Session, page):
 
@@ -162,7 +163,7 @@ def read_promotions(db: Session, page):
     if result:
         return result
     else:
-        return False
+        return None
                 
 def read_ads(db: Session):
     result = db.query(
@@ -177,7 +178,7 @@ def read_ads(db: Session):
     if result:
         return result
     else:
-        return False
+        return None
 
 def read_categories_by_ads(db: Session, ads_id):
     result = db.query(
@@ -187,7 +188,7 @@ def read_categories_by_ads(db: Session, ads_id):
     if result:
         return result
     else:
-        return False
+        return None
 
 def read_category(db: Session):
     result = db.query(
@@ -197,7 +198,7 @@ def read_category(db: Session):
     if result:
         return result
     else:
-        return False
+        return None
 
 
 def read_profile(db: Session, req: GetProfile):
@@ -217,7 +218,8 @@ def read_profile(db: Session, req: GetProfile):
         Profiles.site,
         Profiles.status,
         Profiles.is_VIP,
-        Profiles.category_id
+        Profiles.category_id,
+        Profiles.WiFi
     )
     if len(req.tags_id) > 0:
         result = result.join(TagProducts, TagProducts.profile_id == Profiles.id)
@@ -244,18 +246,18 @@ def read_profile(db: Session, req: GetProfile):
     if result:
         return result
     else:
-        return False
+        return None
 
 def read_promotion_by_profile_id(db: Session, profile_id):
     get_promotion = db.query(
         PromotionStatuses.id,
         PromotionStatuses.promotion_status,
         PromotionStatuses.profile_id
-    ).filter(PromotionStatuses.profile_id == profile_id)
+    ).filter(PromotionStatuses.profile_id == profile_id).first()
     if get_promotion:
-        return get_promotion.first()
+        return get_promotion
     else:
-        return False
+        return None
     
 def read_ads_random(db: Session):
     result = db.query(
@@ -268,12 +270,12 @@ def read_ads_random(db: Session):
         Ads.is_main,
         Ads.site_url
     )
-    result = result.filter(Ads.is_main == False)
+    result = result.filter(Ads.is_main == None)
     result = result.order_by(func.random())
     if result:
         return result.all()
     else:
-        return False
+        return None
         
 def read_profile_by_profile_id(db: Session, profile_id):
     result = db.query(
@@ -311,7 +313,7 @@ def read_profile_by_profile_id(db: Session, profile_id):
     if result:
         return result
     else:
-        return False
+        return None
     
 def read_phone_numbers_by_profile_id(db: Session, profile_id):
     result = db.query(
@@ -321,7 +323,7 @@ def read_phone_numbers_by_profile_id(db: Session, profile_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 def read_images_by_profile_id(db: Session, profile_id):
     result = db.query(
@@ -333,7 +335,7 @@ def read_images_by_profile_id(db: Session, profile_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 
 def read_galleries_by_profile_id(db: Session, profile_id):
@@ -346,7 +348,7 @@ def read_galleries_by_profile_id(db: Session, profile_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 def read_posts_by_profile_id(db: Session, profile_id):
     result = db.query(
@@ -367,7 +369,7 @@ def read_posts_by_profile_id(db: Session, profile_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 def read_certificates_by_profile_id(db: Session, profile_id):
     result = db.query(
@@ -380,7 +382,7 @@ def read_certificates_by_profile_id(db: Session, profile_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 def read_promo_codes_by_profile_id(db: Session, profile_id):
     result = db.query(
@@ -393,7 +395,7 @@ def read_promo_codes_by_profile_id(db: Session, profile_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
 
     
 def read_tags_by_profile_id(db: Session, profile_id):
@@ -409,7 +411,7 @@ def read_tags_by_profile_id(db: Session, profile_id):
     if result:
         return result
     else:
-        return False
+        return None
     
 def read_tags_by_category_id(db: Session, category_id):
     result = db.query(
@@ -432,7 +434,7 @@ def read_category_by_profile_id(db: Session, profile_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 def read_ads_by_join_category_id(db: Session, profile_id):
     result = db.query(
@@ -448,7 +450,7 @@ def read_ads_by_join_category_id(db: Session, profile_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 def read_user_by_fullname_and_phone_number(db: Session, fullname, phone_number):
     result = db.query(
@@ -457,7 +459,7 @@ def read_user_by_fullname_and_phone_number(db: Session, fullname, phone_number):
     if result:
         return result
     else:
-        return False
+        return None
 
 def read_inbox_by_user_id(db: Session, user_id):
     result = db.query(
@@ -471,7 +473,7 @@ def read_inbox_by_user_id(db: Session, user_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 def read_inbox(db: Session):
     result = db.query(
@@ -482,7 +484,7 @@ def read_inbox(db: Session):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 def read_answered_messages_by_user_id(db: Session, user_id):
     result = db.query(
@@ -496,7 +498,7 @@ def read_answered_messages_by_user_id(db: Session, user_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
 
     
 def read_profile_card_promotion(db: Session, limit, page):
@@ -510,7 +512,7 @@ def read_profile_card_promotion(db: Session, limit, page):
         Profiles.like,
         Profiles.dislike,
         Profiles.instagram,
-        Profiles.site,
+        Profiles.site
     )
     result = result.filter(Profiles.tm_muse_card > 0)
     result = result.order_by(desc(Profiles.updated_at))
@@ -518,10 +520,13 @@ def read_profile_card_promotion(db: Session, limit, page):
     new_list = []
     for res in result:
         res = dict(res)
-        get_images = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
+        get_images = read_images_by_profile_id(db=db, profile_id=res["id"])
+        get_images_vr = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
         get_phone_number = read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
         if get_images:
-            res["image"] = get_images
+            res["images"] = get_images
+        if get_images_vr:
+            res["image_vr"] = get_images_vr
         if get_phone_number:
             res["phone_numbers"] = get_phone_number
         new_list.append(res)
@@ -529,7 +534,7 @@ def read_profile_card_promotion(db: Session, limit, page):
     if result:
         return result
     else:
-        return False
+        return None
     
 def create_card_user(db: Session, req: CreateCardUsers, userID):
     cardID = random.randrange(1000000000, 9999999999)
@@ -550,7 +555,7 @@ def create_card_user(db: Session, req: CreateCardUsers, userID):
     if new_add:
         return True
     else:
-        return False
+        return None
     
 def read_constant_by_type(db: Session, type):
     result = db.query(
@@ -558,18 +563,20 @@ def read_constant_by_type(db: Session, type):
         Constants.titleTM,
         Constants.titleRU,
         Constants.contentTM,
-        Constants.contentRU
+        Constants.contentRU,
+        Constants.contentTM_dark,
+        Constants.contentRU_dark
     ).filter(Constants.type == type).all()
     if result:
         return result
     else:
-        return False
+        return None
     
 def create_inbox(db: Session, req: CreateInbox):
     new_add = Inbox(
         title   = req.title,
         message = req.message,
-        is_all  = False
+        is_all  = None
     )
     db.add(new_add)
     db.commit()
@@ -577,18 +584,18 @@ def create_inbox(db: Session, req: CreateInbox):
     if new_add:
         return True
     else:
-        return False
+        return None
     
 def read_inbox_by_title_and_message(db: Session, title, message):
     result = db.query(Inbox.id).filter(and_(Inbox.title == title, Inbox.message == message)).first()
     if result:
         return result
     else:
-        return False
+        return None
     
 def create_send_user(db: Session, userID, inboxID):
     new_add = SendUser(
-        is_read     = False,
+        is_read     = None,
         user_id     = userID,
         inbox_id    = inboxID
     )
@@ -598,7 +605,7 @@ def create_send_user(db: Session, userID, inboxID):
     if new_add:
         return True
     else:
-        return False
+        return None
     
     
 def read_profile_by_profile_id_filter_is_promo(db: Session, profile_id):
@@ -608,7 +615,7 @@ def read_profile_by_profile_id_filter_is_promo(db: Session, profile_id):
     if result.is_promo:
         return True
     else:
-        return False
+        return None
     
 def read_promo_codes_by_profile_id_user_id(db: Session, user_id, profile_id):
     result = db.query(
@@ -622,7 +629,7 @@ def read_promo_codes_by_profile_id_user_id(db: Session, user_id, profile_id):
     if result:
         return result.all()
     else:
-        return False
+        return None
     
 def read_promo_code_count_by_profile_id(db: Session, profile_id):
     result = db.query(
@@ -635,7 +642,7 @@ def read_promo_code_count_by_profile_id(db: Session, profile_id):
     if result:
         return result
     else:
-        return False
+        return None
 
 
 def read_profile_promo_count_by_profile_id(db: Session, profile_id):
@@ -645,7 +652,7 @@ def read_profile_promo_count_by_profile_id(db: Session, profile_id):
     if result:
         return result
     else:
-        return False
+        return None
     
     
 def create_promo_code(db: Session, profileID, userID):
@@ -662,14 +669,14 @@ def create_promo_code(db: Session, profileID, userID):
     if new_add:
         return generated_promo_code
     else:
-        return False
+        return None
     
 def create_certificates(db: Session, req: AddCertificate, userID):
     get_profile = db.query(
         Profiles.is_certificate
     ).filter(Profiles.id == req.profile_id).first()
     if not get_profile.is_certificate:
-        return False
+        return None
     new_add = Certificates(
         amount     = req.amount,
         profile_id = req.profile_id,
@@ -682,14 +689,14 @@ def create_certificates(db: Session, req: AddCertificate, userID):
     if new_add:
         return True
     else:
-        return False
+        return None
     
 def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
     txt = f"amount={req.amount},profile_id={req.profile_id},user_id={userID}"
     new_add = Inbox(
         title   = "certificate",
         message = txt,
-        is_all  = False,
+        is_all  = None,
     )
     db.add(new_add)
     db.commit()
@@ -697,7 +704,7 @@ def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
     if new_add:
         return txt
     else:
-        return False
+        return None
     
 def read_inbox_by_message(db: Session, txt):
     result = db.query(
@@ -706,13 +713,13 @@ def read_inbox_by_message(db: Session, txt):
     if result:
         return result
     else:
-        return False
+        return None
     
 def create_send_user(db: Session, userID, inboxID):
     new_add = SendUser(
         user_id     = userID,
         inbox_id    = inboxID,
-        is_read     = False
+        is_read     = None
     )
     db.add(new_add)
     db.commit()
@@ -720,7 +727,7 @@ def create_send_user(db: Session, userID, inboxID):
     if new_add:
         return True
     else:
-        return False
+        return None
     
     
 def search_profile_by_like(db: Session, req: Search, page, limit):
@@ -738,12 +745,12 @@ def search_profile_by_like(db: Session, req: Search, page, limit):
     )
     result = result.filter(
         or_(
-            Profiles.nameTM.like(f"%{req.text}%"),
-            Profiles.nameTM.like(f"%{(req.text).translate(translation2TM)}%"),
-            Profiles.nameRU.like(f"%{req.text}%"),
-            Profiles.nameRU.like(f"%{(req.text).translate(translation2RU)}%")
+            func.lower(Profiles.nameTM).like(f"%{req.text}%"),
+            func.lower(Profiles.nameTM).like(f"%{(req.text).translate(translation2TM)}%"),
+            func.lower(Profiles.nameRU).like(f"%{req.text}%"),
+            func.lower(Profiles.nameRU).like(f"%{(req.text).translate(translation2RU)}%")
             ))
-    result = result.offset(20 * (page-1)).limit(20).all()
+    result = result.offset(20 * (page-1)).limit(limit).all()
     new_list = []
     for res in result:
         res = dict(res)
@@ -758,7 +765,7 @@ def search_profile_by_like(db: Session, req: Search, page, limit):
     if result:
         return result
     else:
-        return False
+        return None
     
 def create_search_history(db: Session, txt):
     result = db.query(SearchHistory.text).filter(SearchHistory.text == txt).all()
@@ -766,7 +773,7 @@ def create_search_history(db: Session, txt):
         db.query(SearchHistory).filter(SearchHistory.text == txt).\
             update({
                 SearchHistory.count : SearchHistory.count + 1
-            }, synchronize_session=False)
+            }, synchronize_session=None)
         db.commit()
     else:
         new_add = SearchHistory(
@@ -785,7 +792,7 @@ def read_search_history(db: Session):
     if result:
         return result
     else:
-        return False
+        return None
     
     
 def create_number_socket(db: Session, number: PhoneVerify, code):
@@ -801,7 +808,7 @@ def create_number_socket(db: Session, number: PhoneVerify, code):
     if new_add:
         return True
     else:
-        return False
+        return None
     
     
 def read_phone_number_and_code(db: Session, phone_number, code):
@@ -815,30 +822,30 @@ def read_phone_number_and_code(db: Session, phone_number, code):
     if result:
         return result
     else:
-        return False
+        return None
     
 def delete_number_socket(db: Session, phone_number):
     new_delete = db.query(NumberSocket)\
     .filter(NumberSocket.phone_number == phone_number)\
-    .delete(synchronize_session=False)
+    .delete(synchronize_session=None)
     db.commit()
     if new_delete:
         return True
     else:
-        return False
+        return None
     
     
 def read_user_id_from_token(db: Session, header_param: Request):
     token = check_token(header_param=header_param)
     payload = decode_token(token=token)
     if not payload:
-        return False
+        return None
     phone_number: str = payload.get("phone_number")
     result = read_user_by_phone_number(db=db, phone_number=phone_number)
     if result:
         return result.id
     else:
-        return False
+        return None
     
     
 def read_interest_items_by_user_id(db: Session, user_id):
@@ -853,7 +860,7 @@ def read_interest_items_by_user_id(db: Session, user_id):
     if result:
         return result
     else:
-        return False
+        return None
     
     
 def read_images_by_profile_id_isVR_false(db: Session, profile_id):
@@ -868,4 +875,42 @@ def read_images_by_profile_id_isVR_false(db: Session, profile_id):
     if result:
         return result.first()
     else:
-        return False
+        return None
+    
+    
+async def create_ticket(db: Session, ticket: Ticket_insert_schema):
+    date_string = datetime.strptime(ticket.movie_date, "%d/%m/%Y %H:%M:%S")
+    new_add = TicketBron(
+        cinema_id       = ticket.cinema_id,
+        profile_id      = ticket.profile_id,
+        user_id         = ticket.user_id,
+        # movie_date      = date_string,
+        ticket_count    = ticket.ticket_count,
+        ticket_price    = ticket.ticket_price,
+        ticket_discount = ticket.ticket_discount,
+        status          = 1
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return new_add.id
+    else:
+        return None
+    
+    
+async def read_current_ticket(db: Session, user_id):
+    result = db.query(
+        TicketBron.id,
+        TicketBron.cinema_id,
+        TicketBron.profile_id,
+        TicketBron.user_id,
+        TicketBron.movie_date,
+        TicketBron.ticket_count,
+        TicketBron.ticket_discount,
+        TicketBron.ticket_price
+    ).filter(TicketBron.user_id == user_id).all()
+    if result:
+        return result
+    else:
+        return None

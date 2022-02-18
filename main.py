@@ -12,6 +12,8 @@ from routers import answers_router
 from routers import card_router
 from routers import constant_router
 from routers import search_router
+from routers import ticket_router
+import uvicorn
 
 app = FastAPI()
 
@@ -38,6 +40,7 @@ app.include_router(answers_router          , tags=["Answer"])
 app.include_router(card_router             , tags=["Card"])
 app.include_router(constant_router         , tags=["Constant"])
 app.include_router(search_router           , tags=["Search"])
+app.include_router(ticket_router           , tags=["Ticket"])
 
 html = """
 <!DOCTYPE html>
@@ -102,3 +105,6 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         data = await websocket.receive_text()
         await manager.broadcast(f"Client: {data}")
+        
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=3000)

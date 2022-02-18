@@ -8,11 +8,11 @@ import crud
 search_router = APIRouter()
 
 @search_router.post("/search-profile")
-def search_profile(page: int, limit: int, req: Search, db: Session = Depends(get_db)):
+def search_profile(req: Search, db: Session = Depends(get_db)):
     result_history = crud.create_search_history(db=db, txt=req.text)
     if not result_history:
         return Returns.NULL
-    result = crud.search_profile_by_like(db=db, req=req, page=page, limit=limit)
+    result = crud.search_profile_by_like(db=db, req=req, page=req.page, limit=req.limit)
     if not result:
         return Returns.NULL
     else:

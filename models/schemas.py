@@ -63,7 +63,21 @@ class AddCertificate(BaseModel):
         orm_mode = True
         
 class Search(BaseModel):
+    page            : int
+    limit           : int
     text            : str
+    
+    class Config:
+        orm_mode = True
+        
+class Ticket_insert_schema(BaseModel):
+    cinema_id       : int
+    profile_id      : int
+    user_id         : int
+    movie_date      : str
+    ticket_count    : int
+    ticket_price    : float
+    ticket_discount : float
     
     class Config:
         orm_mode = True
