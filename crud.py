@@ -323,6 +323,7 @@ def read_phone_numbers_by_profile_id(db: Session, profile_id):
     result = db.query(
         PhoneNumbers.id,
         PhoneNumbers.phone_number,
+        PhoneNumbers.profile_id
     ).filter(PhoneNumbers.profile_id == profile_id)
     if result:
         return result.all()
