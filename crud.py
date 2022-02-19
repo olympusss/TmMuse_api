@@ -878,7 +878,7 @@ def read_images_by_profile_id_isVR_false(db: Session, profile_id):
     result = result.filter(Images.profile_id == profile_id)
     result = result.filter(Images.isVR == False)
     if result:
-        return result.first()
+        return result.all()
     else:
         return None
     
