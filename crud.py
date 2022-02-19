@@ -123,11 +123,14 @@ def read_movies(db: Session):
         Profiles.nameRU,
         Profiles.short_descTM,
         Profiles.short_descRU,
-        Images.small_image
-    ).join(Images, and_(Images.profile_id == Profiles.id, Images.isVR == False)).\
-        filter(Profiles.category_id == 2).\
-            order_by(desc(Profiles.updated_at)).\
-                limit(20).all()
+        Profiles.created_at,
+        Profiles.updated_at
+    ).filter(Profiles.category_id == 2).order_by(desc(Profiles.created_at)).limit(20).all()
+    for res in result:
+        res = dict(res)
+        image = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
+        if image:
+            res["image"] = image
     if result:
         return result
     else:
