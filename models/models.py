@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, Float, Boolean, ForeignKey, Date
+from sqlalchemy import Column, String, Integer, DateTime, Float, Boolean, ForeignKey, Date, Time
 from datetime import datetime
 from sqlalchemy.orm import relationship
 from db import Base
@@ -455,7 +455,8 @@ class TicketBron(Base):
     cinema_id           = Column(Integer, ForeignKey("admin.id"))
     profile_id          = Column(Integer, ForeignKey("profiles.id"))
     user_id             = Column(Integer, ForeignKey("users.id"))
-    movie_date          = Column(DateTime)
+    movie_date          = Column(Date)
+    movie_time          = Column(Time)
     ticket_count        = Column(Integer)
     ticket_price        = Column(Float)
     ticket_discount     = Column(Float)

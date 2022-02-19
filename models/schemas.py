@@ -75,6 +75,7 @@ class Ticket_insert_schema(BaseModel):
     profile_id      : int
     user_id         : int
     movie_date      : str
+    movie_time      : str
     ticket_count    : int
     ticket_price    : float
     ticket_discount : float

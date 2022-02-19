@@ -879,12 +879,14 @@ def read_images_by_profile_id_isVR_false(db: Session, profile_id):
     
     
 async def create_ticket(db: Session, ticket: Ticket_insert_schema):
-    date_string = datetime.strptime(ticket.movie_date, "%d/%m/%Y %H:%M:%S")
+    date_string = datetime.strptime(ticket.movie_date, "%d/%m/%Y")
+    time_string = datetime.strptime(ticket.movie_time, "%H:%M")
     new_add = TicketBron(
         cinema_id       = ticket.cinema_id,
         profile_id      = ticket.profile_id,
         user_id         = ticket.user_id,
-        # movie_date      = date_string,
+        movie_date      = date_string,
+        movie_time      = time_string,
         ticket_count    = ticket.ticket_count,
         ticket_price    = ticket.ticket_price,
         ticket_discount = ticket.ticket_discount,
@@ -902,14 +904,29 @@ async def create_ticket(db: Session, ticket: Ticket_insert_schema):
 async def read_current_ticket(db: Session, user_id):
     result = db.query(
         TicketBron.id,
-        TicketBron.cinema_id,
         TicketBron.profile_id,
-        TicketBron.user_id,
         TicketBron.movie_date,
+        TicketBron.movie_time,
         TicketBron.ticket_count,
         TicketBron.ticket_discount,
-        TicketBron.ticket_price
-    ).filter(TicketBron.user_id == user_id).all()
+        TicketBron.ticket_price,
+        Profiles.nameTM,
+        Profiles.nameRU,
+        Profiles.short_descTM,
+        Profiles.short_descRU,
+        Profiles.descriptionTM,
+        Profiles.descriptionRU,
+        Users.fullname,
+        Users.phone_number
+    )
+    result = result.join(Profiles, Profiles.id == TicketBron.profile_id)
+    result = result.join(Users, Users.id == TicketBron.user_id)
+    result = result.filter(TicketBron.user_id == user_id).all()
+    for res in result:
+        res = dict(res)
+        image = read_images_by_profile_id_isVR_false(db=db, profile_id=res["profile_id"])
+        if image:
+            res["image"] = image
     if result:
         return result
     else:
