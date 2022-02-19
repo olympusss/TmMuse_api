@@ -25,6 +25,9 @@ from models.models import Constants
 from models.models import SearchHistory
 from models.models import NumberSocket
 from models.models import TicketBron
+from models.models import ProfileView
+from models.models import Ads2Profile_count
+from models.models import AdsView
 
 
 from models.schemas import PhoneVerify

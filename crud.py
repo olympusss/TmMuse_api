@@ -10,7 +10,7 @@ from models import (
     Certificates, PromoCodes, Inbox, SendUser, Answers, AnsweredMessages,
     CardUsers, CreateCardUsers, Constants, CreateInbox, AddCertificate,
     Search, SearchHistory, NumberSocket, PhoneVerify, Ticket_insert_schema,
-    TicketBron
+    TicketBron, ProfileView, AdsView, Ads2Profile_count
 )
 from tokens import create_access_token, check_token, decode_token
 from datetime import datetime
@@ -927,12 +927,28 @@ async def read_current_ticket(db: Session, user_id):
     result = result.join(Profiles, Profiles.id == TicketBron.profile_id)
     result = result.join(Users, Users.id == TicketBron.user_id)
     result = result.filter(TicketBron.user_id == user_id).all()
+    new_list = []
     for res in result:
         res = dict(res)
         image = read_images_by_profile_id_isVR_false(db=db, profile_id=res["profile_id"])
         if image:
             res["image"] = image
+        new_list.append(res)
+    result = new_list
     if result:
         return result
+    else:
+        return None
+    
+    
+async def create_profile_view(db: Session, profile_id):
+    new_add = ProfileView(
+        profile_id = profile_id
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
     else:
         return None
