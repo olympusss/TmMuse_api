@@ -44,7 +44,7 @@ def get_profile(req: GetProfile, db: Session = Depends(get_db)):
     
     
 @profile_router.get("/get-profile-tiny")
-def get_profile_tiny(profile_id: int, db: Session = Depends(get_db)):
+async def get_profile_tiny(profile_id: int, db: Session = Depends(get_db)):
     results = {}
     result_profile = crud.read_profile_by_profile_id(db=db, profile_id=profile_id)
     if result_profile:
@@ -79,10 +79,8 @@ def get_profile_tiny(profile_id: int, db: Session = Depends(get_db)):
     results_ads = crud.read_ads_by_join_category_id(db=db, profile_id=profile_id)
     if results_ads:
         results["ads"]           = results_ads
-    profile_view = crud.create_profile_view(db=db, profile_id=profile_id)
-    if not profile_view:
-        return Returns.NULL
     if results:
+        await crud.create_profile_view(db=db, profile_id=profile_id)
         return Returns.object(results)
     else:
         return Returns.NULL

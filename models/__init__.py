@@ -28,6 +28,7 @@ from models.models import TicketBron
 from models.models import ProfileView
 from models.models import Ads2Profile_count
 from models.models import AdsView
+from models.models import AppVisitors
 
 
 from models.schemas import PhoneVerify
@@ -40,3 +41,5 @@ from models.schemas import GetPromoCodes
 from models.schemas import AddCertificate
 from models.schemas import Search
 from models.schemas import Ticket_insert_schema
+from models.schemas import ViewCountSchema
+from models.schemas import LikeDislikeSchema

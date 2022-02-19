@@ -10,8 +10,10 @@ from models import (
     Certificates, PromoCodes, Inbox, SendUser, Answers, AnsweredMessages,
     CardUsers, CreateCardUsers, Constants, CreateInbox, AddCertificate,
     Search, SearchHistory, NumberSocket, PhoneVerify, Ticket_insert_schema,
-    TicketBron, ProfileView, AdsView, Ads2Profile_count
+    TicketBron, ProfileView, AdsView, Ads2Profile_count, ViewCountSchema,
+    AppVisitors, LikeDislikeSchema
 )
+from models.models import PopUp
 from tokens import create_access_token, check_token, decode_token
 from datetime import datetime
 from translation import translation2TM, translation2RU
@@ -312,7 +314,8 @@ def read_profile_by_profile_id(db: Session, profile_id):
         Profiles.order_in_list,
         Profiles.free_time,
         Profiles.is_cash,
-        Profiles.is_terminal
+        Profiles.is_terminal,
+        Profiles.cinema_id
     ).filter(Profiles.id == profile_id).first()
     if result:
         return result
@@ -952,3 +955,83 @@ async def create_profile_view(db: Session, profile_id):
         return True
     else:
         return None
+    
+    
+async def create_view_count(db: Session, view: ViewCountSchema):
+    if view.type == "post":
+        profile_id = db.query(Posts.profile_id).filter(Posts.id == view.ads_id).first()
+    if view.type == "ads":
+        profile_id = db.query(Ads.profile_id).filter(Ads.id == view.ads_id).first()
+    if view.type == "banner":
+        profile_id = db.query(Images.profile_id).filter(Images.id == view.ads_id).first()
+    if view.type == "popup":
+        profile_id = db.query(PopUp.profile_id).filter(PopUp.id == view.ads_id).first()
+    new_add = AdsView(
+        ads_id      = view.ads_id,
+        profile_id  = profile_id["profile_id"],
+        user_id     = view.user_id,
+        type        = view.type
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
+    else:
+        return None
+    
+async def create_click_count(db: Session, click: ViewCountSchema):
+    if click.type == "post":
+        profile_id = db.query(Posts.profile_id).filter(Posts.id == click.ads_id).first()
+    if click.type == "ads":
+        profile_id = db.query(Ads.profile_id).filter(Ads.id == click.ads_id).first()
+    if click.type == "banner":
+        profile_id = db.query(Images.profile_id).filter(Images.id == click.ads_id).first()
+    if click.type == "popup":
+        profile_id = db.query(PopUp.profile_id).filter(PopUp.id == click.ads_id).first()
+    new_add = Ads2Profile_count(
+        ads_id      = click.ads_id,
+        profile_id  = profile_id["profile_id"],
+        user_id     = click.user_id,
+        type        = click.type
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
+    else:
+        return None
+    
+    
+async def create_app_visitors(db: Session):
+    new_add = AppVisitors()
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    if new_add:
+        return True
+    else:
+        return None
+    
+    
+async def create_like_dislike(db: Session, like: LikeDislikeSchema):
+    if like.table_type == "post":
+        if like.column_type == "like":
+            db.query(Posts).filter(Posts.id == like.id)\
+            .update({Posts.like : Posts.like + 1}, synchronize_session=False)
+            db.commit()
+        else:
+            db.query(Posts).filter(Posts.id == like.id)\
+            .update({Posts.dislike : Posts.dislike + 1}, synchronize_session=False)
+            db.commit()           
+    else:
+        if like.column_type == "like":
+            db.query(Profiles).filter(Profiles.id == like.id)\
+            .update({Profiles.like : Profiles.like + 1}, synchronize_session=False)
+            db.commit()
+        else:
+            db.query(Profiles).filter(Profiles.id == like.id)\
+            .update({Profiles.dislike : Profiles.dislike + 1}, synchronize_session=False)
+            db.commit()
+    return True

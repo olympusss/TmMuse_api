@@ -82,3 +82,21 @@ class Ticket_insert_schema(BaseModel):
     
     class Config:
         orm_mode = True
+        
+        
+class ViewCountSchema(BaseModel):
+    ads_id          : int
+    type            : str
+    user_id         : int = None
+    
+    class Config:
+        orm_mode = True
+        
+        
+class LikeDislikeSchema(BaseModel):
+    id              : int
+    column_type     : str
+    table_type      : str
+    
+    class Config:
+        orm_mode = True

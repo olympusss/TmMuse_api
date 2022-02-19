@@ -7,7 +7,7 @@ from tokens import Returns
 home_router = APIRouter()
 
 @home_router.get("/get-home")
-def get_home(page: int, db: Session = Depends(get_db)):
+async def get_home(page: int, db: Session = Depends(get_db)):
     result = {}
     if page == 1:
         result["banners"] = crud.read_banner(db=db)
@@ -16,8 +16,8 @@ def get_home(page: int, db: Session = Depends(get_db)):
         result["ads"] = crud.read_ads(db=db)
     else:
         result["promotions"] = crud.read_promotions(db=db, page=page)
-        
     if result:
+        await crud.create_app_visitors(db=db)
         return Returns.object(result)
     else:
         return Returns.NULL

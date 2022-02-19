@@ -13,6 +13,7 @@ from routers import card_router
 from routers import constant_router
 from routers import search_router
 from routers import ticket_router
+from routers import view_count_router
 import uvicorn
 
 app = FastAPI()
@@ -41,6 +42,7 @@ app.include_router(card_router             , tags=["Card"])
 app.include_router(constant_router         , tags=["Constant"])
 app.include_router(search_router           , tags=["Search"])
 app.include_router(ticket_router           , tags=["Ticket"])
+app.include_router(view_count_router       , tags=["Click_View"])
 
 html = """
 <!DOCTYPE html>
