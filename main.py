@@ -61,7 +61,7 @@ html = """
         </ul>
         <script>
             var clientID = Date.now();
-            var ws = new WebSocket(`ws://10.192.168.16:8000/ws`);
+            var ws = new WebSocket(`ws://10.192.168.60:3000/ws`);
 
             function processMessage(event) {
                 var messages = document.getElementById('messages')
