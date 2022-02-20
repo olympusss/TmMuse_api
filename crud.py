@@ -128,11 +128,14 @@ async def read_movies(db: Session):
         Profiles.created_at,
         Profiles.updated_at
     ).filter(Profiles.category_id == 2).order_by(desc(Profiles.created_at)).limit(20).all()
+    new_list = []
     for res in result:
         res = dict(res)
         image = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
         if image:
             res["image"] = image
+        new_list.append(res)
+    result = new_list
     if result:
         return result
     else:
