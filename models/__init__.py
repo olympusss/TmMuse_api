@@ -43,3 +43,4 @@ from models.schemas import Search
 from models.schemas import Ticket_insert_schema
 from models.schemas import ViewCountSchema
 from models.schemas import LikeDislikeSchema
+from models.schemas import SendUserIsReadSchema

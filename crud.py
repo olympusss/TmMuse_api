@@ -11,7 +11,7 @@ from models import (
     CardUsers, CreateCardUsers, Constants, CreateInbox, AddCertificate,
     Search, SearchHistory, NumberSocket, PhoneVerify, Ticket_insert_schema,
     TicketBron, ProfileView, AdsView, Ads2Profile_count, ViewCountSchema,
-    AppVisitors, LikeDislikeSchema
+    AppVisitors, LikeDislikeSchema, SendUserIsReadSchema
 )
 from models.models import PopUp
 from tokens import create_access_token, check_token, decode_token
@@ -510,6 +510,18 @@ def read_answered_messages_by_user_id(db: Session, user_id):
     else:
         return None
 
+async def update_send_user_is_read(db: Session, id, req: SendUserIsReadSchema):
+    new_update = db.query(SendUser).filter(SendUser.id == id).\
+        update({
+            SendUser.is_read : req.is_read
+        }, synchronize_session=False)
+    db.commit()
+    if new_update:
+        return True
+    else:
+        return None
+    
+    
     
 def read_profile_card_promotion(db: Session, limit, page):
     result = db.query(

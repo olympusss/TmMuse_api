@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from db import get_db
-from tokens import check_token, decode_token, Returns
+from tokens import Returns
 import crud
-from models import CreateInbox, Inbox
+from models import CreateInbox, SendUserIsReadSchema
 
 answers_router = APIRouter()
 
@@ -41,4 +41,15 @@ async def insert_inbox(req: CreateInbox, header_param: Request, db: Session = De
         return Returns.INSERTED
     else:
         return Returns.NOT_INSERTED
-        
+    
+    
+@answers_router.put("update-is-read", dependencies=[Depends(HTTPBearer())])
+async def update_is_read(id: int, req: SendUserIsReadSchema, header_param: Request, db: Session = Depends(get_db)):
+    user_id = crud.read_user_id_from_token(db=db, header_param=header_param)
+    if not user_id:
+        return Returns.USER_NOT_FOUND
+    result = await crud.update_send_user_is_read(db=db, id=id, req=req)
+    if result:
+        return Returns.UPDATED
+    else:
+        return Returns.NOT_UPDATED

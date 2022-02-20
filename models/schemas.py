@@ -100,3 +100,10 @@ class LikeDislikeSchema(BaseModel):
     
     class Config:
         orm_mode = True
+        
+        
+class SendUserIsReadSchema(BaseModel):
+    is_read         : bool
+    
+    class Config:
+        orm_mode = True
