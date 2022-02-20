@@ -474,7 +474,9 @@ def read_inbox_by_user_id(db: Session, user_id):
         SendUser.is_read,
         Inbox.title,
         Inbox.message,
-        Inbox.is_all
+        Inbox.is_all,
+        Inbox.created_at,
+        Inbox.updated_at
     )
     result = result.join(Inbox, Inbox.id == SendUser.inbox_id)
     result = result.filter(SendUser.user_id == user_id)
