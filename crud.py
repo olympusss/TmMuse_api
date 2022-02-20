@@ -105,7 +105,7 @@ def delete_user_interest(db: Session, user_id):
     else:
         return None
     
-def read_banner(db: Session):
+async def read_banner(db: Session):
     result = db.query(
         Banners.id,
         Banners.image,
@@ -118,7 +118,7 @@ def read_banner(db: Session):
     else:
         return None
 
-def read_movies(db: Session):
+async def read_movies(db: Session):
     result = db.query(
         Profiles.id,
         Profiles.nameTM,
@@ -138,7 +138,7 @@ def read_movies(db: Session):
     else:
         return None
 
-def read_promotions(db: Session, page):
+async def read_promotions(db: Session, page):
 
     result = db.query(
         Posts.id,
@@ -170,7 +170,7 @@ def read_promotions(db: Session, page):
     else:
         return None
                 
-def read_ads(db: Session):
+async def read_ads(db: Session):
     result = db.query(
         Ads.id,
         Ads.nameTM,
@@ -1037,3 +1037,21 @@ async def create_like_dislike(db: Session, like: LikeDislikeSchema):
             .update({Profiles.dislike : Profiles.dislike + 1}, synchronize_session=False)
             db.commit()
     return True
+
+
+async def read_popup(db: Session):
+    result = db.query(
+        PopUp.id,
+        PopUp.comment_of_admin,
+        PopUp.image,
+        PopUp.site_url,
+        PopUp.titleTM,
+        PopUp.titleRU,
+        PopUp.descriptionTM,
+        PopUp.descriptionRU,
+        PopUp.profile_id
+    ).all()
+    if result:
+        return result
+    else:
+        return None
