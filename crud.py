@@ -584,7 +584,7 @@ def create_inbox(db: Session, req: CreateInbox):
     new_add = Inbox(
         title   = req.title,
         message = req.message,
-        is_all  = None
+        is_all  = False
     )
     db.add(new_add)
     db.commit()
@@ -603,7 +603,7 @@ def read_inbox_by_title_and_message(db: Session, title, message):
     
 def create_send_user(db: Session, userID, inboxID):
     new_add = SendUser(
-        is_read     = None,
+        is_read     = False,
         user_id     = userID,
         inbox_id    = inboxID
     )
