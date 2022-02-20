@@ -935,6 +935,7 @@ async def read_current_ticket(db: Session, user_id):
         TicketBron.ticket_count,
         TicketBron.ticket_discount,
         TicketBron.ticket_price,
+        TicketBron.status,
         Profiles.nameTM,
         Profiles.nameRU,
         Profiles.short_descTM,
