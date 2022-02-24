@@ -246,7 +246,8 @@ class Posts(Base):
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    posts_profiles = relationship("Profiles", back_populates="profiles_posts")
+    posts_profiles     = relationship("Profiles", back_populates="profiles_posts")
+    posts_popup        = relationship("PopUp", back_populates="popup_posts")
     
     
 class Certificates(Base):
@@ -394,9 +395,11 @@ class PopUp(Base):
     descriptionTM      = Column(String)
     descriptionRU      = Column(String)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    posts_id           = Column(Integer, ForeignKey("posts.id"))    
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     popup_profiles     = relationship("Profiles", back_populates="profiles_popup")
+    popup_posts        = relationship("Posts", back_populates="posts_popup")
     
     
 class NumberSocket(Base):

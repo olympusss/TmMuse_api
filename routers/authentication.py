@@ -6,7 +6,7 @@ from db import get_db
 import random
 import crud
 from tokens import Returns
-from datetime import date, datetime
+from datetime import datetime
 
 
 authentication_router = APIRouter()
