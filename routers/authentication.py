@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 from models import PhoneVerify, CodeVerify
-from websocket import manager
 from sqlalchemy.orm import Session
 from db import get_db
 import random
 import crud
 from tokens import Returns
 from datetime import datetime
+from socket_io import sio
 
 
 authentication_router = APIRouter()
@@ -25,7 +25,7 @@ async def phone_verification(req: PhoneVerify, db: Session = Depends(get_db)):
     generated_code = random.randint(1000, 9999)
     result = crud.create_number_socket(db=db, number=req, code=generated_code)
     data = f"{req.phone_number},{generated_code}"
-    await manager.broadcast(data)
+    await sio.emit("onMessage", data)
     if result:
         return Returns.INSERTED
     else:

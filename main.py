@@ -1,6 +1,5 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
-from websocket import manager
 from db import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 from routers import authentication_router
@@ -15,9 +14,10 @@ from routers import search_router
 from routers import ticket_router
 from routers import view_count_router
 import uvicorn
+from socket_io import socket_app
+
 
 app = FastAPI()
-
 
 origins = ["*"]
 methods = ["*"]
@@ -44,69 +44,8 @@ app.include_router(search_router           , tags=["Search"])
 app.include_router(ticket_router           , tags=["Ticket"])
 app.include_router(view_count_router       , tags=["Click_View"])
 
-html = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Chat</title>
-    </head>
-    <body>
-        <h1>WebSocket</h1>
-        <button onClick="showForm(event)" id="connect">Connect</button>
-        <form action="" onsubmit="sendMessage(event)" id="form" style="display: none">
-            <input type="text" id="messageText" autocomplete="off"/>
-            <button>Send</button>
-        </form>
-        <ul id='messages'>
-        </ul>
-        <script>
-            var clientID = Date.now();
-            var ws = new WebSocket(`ws://10.192.168.60:3000/ws`);
-
-            function processMessage(event) {
-                var messages = document.getElementById('messages')
-                var message = document.createElement('li')
-                var content = document.createTextNode(event.data)
-                message.appendChild(content);
-                messages.appendChild(message);
-            }
-
-            ws.onmessage = processMessage;
-
-            function sendMessage(event) {
-                var input = document.getElementById("messageText")
-                var message = document.createElement('li')
-                var content = document.createTextNode(input.value)
-                message.appendChild(content);
-                messages.appendChild(message);
-                ws.send(input.value);
-
-                input.value = ''
-                event.preventDefault()
-            }
-
-            function showForm(event) {
-                var button = document.getElementById("connect");
-                var form = document.getElementById("form");
-                button.style.display = "none";
-                form.style.display = "block";
-            }
-
-        </script>
-    </body>
-</html>
-"""
-
-@app.get("/")
-async def html_response():
-    return HTMLResponse(html)
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
-    while True:
-        data = await websocket.receive_text()
-        await manager.broadcast(f"Client: {data}")
-        
+    
+app.mount("/", socket_app)
+       
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=3000)
