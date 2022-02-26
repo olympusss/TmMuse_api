@@ -970,6 +970,11 @@ async def create_profile_view(db: Session, profile_id):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    new_update = db.query(Profiles).filter(Profiles.id == profile_id).\
+        update({
+            Profiles.view_count : Profiles.view_count + 1
+        }, synchronize_session=False)
+    db.commit()
     if new_add:
         return True
     else:
