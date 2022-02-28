@@ -231,7 +231,7 @@ class Posts(Base):
     status             = Column(Boolean)
     image              = Column(String)
     promotion          = Column(Float)
-    view_count         = Column(Integer)
+    view_count         = Column(Integer, default = 0)
     like               = Column(Integer)
     dislike            = Column(Integer)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
