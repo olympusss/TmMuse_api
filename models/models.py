@@ -10,8 +10,8 @@ class Users(Base):
     phone_number       = Column(String)
     token              = Column(String)
     notif_token        = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     users_userinterests = relationship("UserInterests", back_populates="userinterests_users")
     users_certificates  = relationship("Certificates" , back_populates="certificates_users")
     users_promocodes    = relationship("PromoCodes"   , back_populates="promocodes_users")
@@ -27,8 +27,8 @@ class Interests(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     titleTM            = Column(String)
     titleRU            = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     interests_interestitems = relationship("InterestItems", back_populates="interestitems_interests")
     
     
@@ -38,8 +38,8 @@ class InterestItems(Base):
     titleTM            = Column(String)
     titleRU            = Column(String)
     interest_id        = Column(Integer, ForeignKey("interests.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     interestitems_userinterests = relationship("UserInterests", back_populates="userinterests_interestitems")
     interestitems_interests = relationship("Interests", back_populates="interests_interestitems")
     
@@ -49,8 +49,8 @@ class UserInterests(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     interest_item_id   = Column(Integer, ForeignKey("interest_items.id"))
     user_id            = Column(Integer, ForeignKey("users.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     userinterests_users         = relationship("Users", back_populates="users_userinterests")
     userinterests_interestitems = relationship("InterestItems", back_populates="interestitems_userinterests")
     
@@ -63,8 +63,8 @@ class Banners(Base):
     order              = Column(Integer)
     comment_of_admin   = Column(String)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     banners_profiles   = relationship("Profiles" , back_populates="profiles_banners")
     
     
@@ -72,8 +72,8 @@ class Categories(Base):
     __tablename__      = "categories"
     id                 = Column(Integer, primary_key=True, index=True)
     name               = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     categories_profiles        = relationship("Profiles", back_populates="profiles_categories")
     categories_joincategoryads = relationship("JoinCategoryAds", back_populates="joincategoryads_categories")
     categories_tags            = relationship("Tags", back_populates="tags_categories")
@@ -84,8 +84,8 @@ class PhoneNumbers(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     phone_number       = Column(String)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     phonenumbers_profiles = relationship("Profiles", back_populates="profiles_phonenumbers")
     
     
@@ -94,8 +94,8 @@ class PromotionStatuses(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     promotion_status   = Column(Float)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     promotionstatuses_profiles = relationship("Profiles", back_populates="profiles_promotionstatuses")
     
     
@@ -106,8 +106,8 @@ class Images(Base):
     large_image        = Column(String)
     isVR               = Column(Boolean, default=False)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     images_profiles    = relationship("Profiles", back_populates="profiles_images")
     
     
@@ -147,8 +147,8 @@ class Profiles(Base):
     order_in_list      = Column(Integer)
     free_time          = Column(String)
     required_promotion = Column(Boolean)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     
     profiles_images            = relationship("Images"              , back_populates="images_profiles")
     profiles_promotionstatuses = relationship("PromotionStatuses"   , back_populates="promotionstatuses_profiles")
@@ -156,7 +156,6 @@ class Profiles(Base):
     profiles_banners           = relationship("Banners"             , back_populates="banners_profiles")
     profiles_categories        = relationship("Categories"          , back_populates="categories_profiles")
     profiles_ads               = relationship("Ads"                 , back_populates="ads_profiles")
-    profiles_tagproducts       = relationship("TagProducts"         , back_populates="tagproducts_profiles")
     profiles_galleries         = relationship("Galleries"           , back_populates="galleries_profiles")
     profiles_posts             = relationship("Posts"               , back_populates="posts_profiles")
     profiles_certificates      = relationship("Certificates"        , back_populates="certificates_profiles")
@@ -166,6 +165,7 @@ class Profiles(Base):
     profiles_ads2profile       = relationship("Ads2Profile_count"   , back_populates="ads2profile_profiles")
     profiles_adsview           = relationship("AdsView"             , back_populates="adsview_profiles")
     profiles_ticketbron        = relationship("TicketBron"          , back_populates="ticketbron_profiles")
+    profiles_tags              = relationship("Tags"                , back_populates="tags_profiles")
     
 
 
@@ -180,8 +180,8 @@ class Ads(Base):
     is_main            = Column(Boolean)
     site_url           = Column(String)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     ads_profiles        = relationship("Profiles", back_populates="profiles_ads")
     ads_joincategoryads = relationship("JoinCategoryAds", back_populates="joincategoryads_ads")
     
@@ -201,21 +201,12 @@ class Tags(Base):
     tagTM              = Column(String)
     tagRU              = Column(String)
     category_id        = Column(Integer, ForeignKey("categories.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
-    tags_tagproducts   = relationship("TagProducts" , back_populates="tagproducts_tags")
+    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
+    tags_profiles      = relationship("Profiles" , back_populates="profiles_tags")
     tags_categories    = relationship("Categories", back_populates="categories_tags")
     
-    
-class TagProducts(Base):
-    __tablename__      = "tag_products"
-    id                 = Column(Integer, primary_key=True, index=True)
-    profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    tags_id            = Column(Integer, ForeignKey("tags.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
-    tagproducts_profiles = relationship("Profiles", back_populates="profiles_tagproducts")
-    tagproducts_tags     = relationship("Tags"    , back_populates="tags_tagproducts")
     
     
 class Galleries(Base):
@@ -224,8 +215,8 @@ class Galleries(Base):
     medium_image       = Column(String)
     large_image        = Column(String)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     galleries_profiles = relationship("Profiles", back_populates="profiles_galleries")
     
     
@@ -244,8 +235,8 @@ class Posts(Base):
     like               = Column(Integer)
     dislike            = Column(Integer)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     posts_profiles     = relationship("Profiles", back_populates="profiles_posts")
     posts_popup        = relationship("PopUp", back_populates="popup_posts")
     
@@ -257,8 +248,8 @@ class Certificates(Base):
     status             = Column(Integer)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     user_id            = Column(Integer, ForeignKey("users.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     certificates_profiles = relationship("Profiles", back_populates="profiles_certificates")
     certificates_users    = relationship("Users"   , back_populates="users_certificates")
     
@@ -270,8 +261,8 @@ class PromoCodes(Base):
     status             = Column(Integer)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     user_id            = Column(Integer, ForeignKey("users.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     promocodes_profiles = relationship("Profiles", back_populates="profiles_promocodes")
     promocodes_users    = relationship("Users"   , back_populates="users_promocodes")
     
@@ -282,8 +273,8 @@ class Inbox(Base):
     title              = Column(String)
     message            = Column(String)
     is_all             = Column(Boolean)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     inbox_senduser     = relationship("SendUser", back_populates="senduser_inbox")
     inbox_answers      = relationship("Answers" , back_populates="answers_inbox")
     
@@ -294,8 +285,8 @@ class SendUser(Base):
     is_read            = Column(Boolean, default=False)
     user_id            = Column(Integer, ForeignKey("users.id"))
     inbox_id           = Column(Integer, ForeignKey("inbox.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     senduser_inbox     = relationship("Inbox", back_populates="inbox_senduser")
     senduser_users     = relationship("Users", back_populates="users_senduser")
     
@@ -305,8 +296,8 @@ class AnsweredMessages(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     title              = Column(String)
     message            = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     answeredmessages_answers = relationship("Answers", back_populates="answers_answeredmessages")
     
     
@@ -315,8 +306,8 @@ class Answers(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     answered_msg_id    = Column(Integer, ForeignKey("answered_messages.id"))
     inbox_id           = Column(Integer, ForeignKey("inbox.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     answers_inbox            = relationship("Inbox", back_populates="inbox_answers")
     answers_answeredmessages = relationship("AnsweredMessages", back_populates="answeredmessages_answers")
     
@@ -331,8 +322,8 @@ class CardUsers(Base):
     status             = Column(Integer)
     card_id            = Column(String)
     user_id            = Column(Integer, ForeignKey("users.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     cardusers_users    = relationship("Users", back_populates="users_cardusers")
     
     
@@ -348,8 +339,8 @@ class Constants(Base):
     contentTM_dark     = Column(String)
     contentRU_dark     = Column(String)
     type               = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     
     
 class SearchHistory(Base):
@@ -357,8 +348,8 @@ class SearchHistory(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     text               = Column(String)
     count              = Column(Integer)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     
 
 class Admin(Base):
@@ -368,9 +359,9 @@ class Admin(Base):
     password           = Column(String)
     token              = Column(String)
     type               = Column(Integer, ForeignKey('admin_type.id'))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
-    admin_admintype    = relationship('AdminType'   , back_populates='admintype_admin')
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
+    admin_admintype    = relationship('AdminType', back_populates='admintype_admin')
     admin_ticketbron   = relationship("TicketBron"  , back_populates="ticketbron_admin")
     
     
@@ -379,8 +370,8 @@ class AdminType(Base):
     __tablename__      = "admin_type"
     id                 = Column(Integer, primary_key=True, index=True)
     type               = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     admintype_admin    = relationship('Admin', back_populates='admin_admintype')
     
     
@@ -395,9 +386,9 @@ class PopUp(Base):
     descriptionTM      = Column(String)
     descriptionRU      = Column(String)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    posts_id           = Column(Integer, ForeignKey("posts.id"))    
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    posts_id           = Column(Integer, ForeignKey("posts.id"))
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     popup_profiles     = relationship("Profiles", back_populates="profiles_popup")
     popup_posts        = relationship("Posts", back_populates="posts_popup")
     
@@ -407,8 +398,8 @@ class NumberSocket(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     phone_number       = Column(String)
     code               = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     
     
 class ProfileView(Base):
@@ -416,8 +407,8 @@ class ProfileView(Base):
     id                 = Column(Integer, primary_key=True, index=True)
     user_id            = Column(Integer)
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     profileview_profiles  = relationship("Profiles", back_populates="profiles_profileview")
     
     
@@ -428,8 +419,8 @@ class Ads2Profile_count(Base):
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     ads_id             = Column(Integer)
     type               = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     ads2profile_profiles = relationship("Profiles", back_populates="profiles_ads2profile")
     
 class AdsView(Base):
@@ -439,8 +430,8 @@ class AdsView(Base):
     profile_id         = Column(Integer, ForeignKey("profiles.id"))
     ads_id             = Column(Integer)
     type               = Column(String)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     adsview_profiles   = relationship("Profiles", back_populates="profiles_adsview")
     
     
@@ -448,9 +439,8 @@ class AppVisitors(Base):
     __tablename__      = "app_visitors"
     id                 = Column(Integer, primary_key=True, index=True)
     user_id            = Column(Integer)
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
-  
+    created_at         = Column(DateTime, default=datetime.utcnow())
+    updated_at         = Column(DateTime, default=datetime.utcnow())
     
 class TicketBron(Base):
     __tablename__       = "ticket_bron"
@@ -464,8 +454,8 @@ class TicketBron(Base):
     ticket_price        = Column(Float)
     ticket_discount     = Column(Float)
     status              = Column(Integer)
-    created_at          = Column(DateTime, default=datetime.now())
-    updated_at          = Column(DateTime, default=datetime.now())
+    created_at          = Column(DateTime, default=datetime.utcnow())
+    updated_at          = Column(DateTime, default=datetime.utcnow())
     ticketbron_admin    = relationship("Admin"      , back_populates="admin_ticketbron")
     ticketbron_profiles = relationship("Profiles"   , back_populates="profiles_ticketbron")
     ticketbron_users    = relationship("Users"      , back_populates="users_ticketbron")

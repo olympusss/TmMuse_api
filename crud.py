@@ -6,10 +6,10 @@ from sqlalchemy import and_, or_, desc, asc, func
 from models import (
     Users, CodeVerify, InterestItems, Interests, UserInterests, Banners, 
     Categories, PhoneNumbers, PromotionStatuses, Images, Profiles, Ads, 
-    JoinCategoryAds, GetProfile, Tags, TagProducts, Galleries, Posts,
-    Certificates, PromoCodes, Inbox, SendUser, Answers, AnsweredMessages,
-    CardUsers, CreateCardUsers, Constants, CreateInbox, AddCertificate,
-    Search, SearchHistory, NumberSocket, PhoneVerify, Ticket_insert_schema,
+    JoinCategoryAds, GetProfile, Tags, Galleries, Posts, Certificates, 
+    PromoCodes, Inbox, SendUser, Answers, AnsweredMessages, CardUsers, 
+    CreateCardUsers, Constants, CreateInbox, AddCertificate, Search, 
+    SearchHistory, NumberSocket, PhoneVerify, Ticket_insert_schema,
     TicketBron, ProfileView, AdsView, Ads2Profile_count, ViewCountSchema,
     AppVisitors, LikeDislikeSchema, SendUserIsReadSchema
 )
@@ -231,8 +231,8 @@ def read_profile(db: Session, req: GetProfile):
         Profiles.average_check
     )
     if len(req.tags_id) > 0:
-        result = result.join(TagProducts, TagProducts.profile_id == Profiles.id)
-        result = result.filter(or_(TagProducts.tags_id == elem for elem in req.tags_id))
+        result = result.join(Tags, Tags.profile_id == Profiles.id)
+        result = result.filter(or_(Tags.id == elem for elem in req.tags_id))
     if len(req.category) > 0:
         result = result.join(Categories, Categories.id == Profiles.category_id)
         result = result.filter(or_(Categories.id == elem for elem in req.category))
@@ -417,8 +417,7 @@ def read_tags_by_profile_id(db: Session, profile_id):
         Tags.tagRU,
         Tags.category_id
     )
-    result = result.join(TagProducts, TagProducts.tags_id == Tags.id)
-    result = result.join(Profiles, Profiles.id == TagProducts.profile_id)
+    result = result.join(Profiles, Profiles.id == Tags.profile_id)
     result = result.filter(Profiles.id == profile_id).all()
     if result:
         return result
