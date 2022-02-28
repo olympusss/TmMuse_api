@@ -983,6 +983,9 @@ async def create_profile_view(db: Session, profile_id):
 async def create_view_count(db: Session, view: ViewCountSchema):
     if view.type == "post":
         profile_id = db.query(Posts.profile_id).filter(Posts.id == view.ads_id).first()
+        db.query(Posts).filter(Posts.id == view.ads_id)\
+        .update({Posts.view_count : Posts.view_count + 1}, synchronize_session=False)
+        db.commit()
     if view.type == "ads":
         profile_id = db.query(Ads.profile_id).filter(Ads.id == view.ads_id).first()
     if view.type == "banner":
