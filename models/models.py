@@ -161,9 +161,6 @@ class Profiles(Base):
     profiles_certificates      = relationship("Certificates"        , back_populates="certificates_profiles")
     profiles_promocodes        = relationship("PromoCodes"          , back_populates="promocodes_profiles")
     profiles_popup             = relationship("PopUp"               , back_populates="popup_profiles")
-    profiles_profileview       = relationship("ProfileView"         , back_populates="profileview_profiles")
-    profiles_ads2profile       = relationship("Ads2Profile_count"   , back_populates="ads2profile_profiles")
-    profiles_adsview           = relationship("AdsView"             , back_populates="adsview_profiles")
     profiles_ticketbron        = relationship("TicketBron"          , back_populates="ticketbron_profiles")
     profiles_tags              = relationship("Tags"                , back_populates="tags_profiles")
     
@@ -406,33 +403,30 @@ class ProfileView(Base):
     __tablename__      = "profile_view"
     id                 = Column(Integer, primary_key=True, index=True)
     user_id            = Column(Integer)
-    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    profile_id         = Column(Integer)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    profileview_profiles  = relationship("Profiles", back_populates="profiles_profileview")
     
     
 class Ads2Profile_count(Base):
     __tablename__      = "ads2profile_count"
     id                 = Column(Integer, primary_key=True, index=True)
     user_id            = Column(Integer)
-    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    profile_id         = Column(Integer)
     ads_id             = Column(Integer)
     type               = Column(String)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    ads2profile_profiles = relationship("Profiles", back_populates="profiles_ads2profile")
     
 class AdsView(Base):
     __tablename__      = "ads_view"
     id                 = Column(Integer, primary_key=True, index=True)
     user_id            = Column(Integer)
-    profile_id         = Column(Integer, ForeignKey("profiles.id"))
+    profile_id         = Column(Integer)
     ads_id             = Column(Integer)
     type               = Column(String)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
-    adsview_profiles   = relationship("Profiles", back_populates="profiles_adsview")
     
     
 class AppVisitors(Base):
