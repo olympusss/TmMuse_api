@@ -947,7 +947,7 @@ async def read_current_ticket(db: Session, user_id):
     )
     result = result.join(Profiles, Profiles.id == TicketBron.profile_id)
     result = result.join(Users, Users.id == TicketBron.user_id)
-    result = result.filter(TicketBron.user_id == user_id).all()
+    result = result.filter(TicketBron.user_id == user_id).order_by(desc(TicketBron.id)).all()
     new_list = []
     for res in result:
         res = dict(res)
