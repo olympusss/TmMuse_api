@@ -11,7 +11,7 @@ from models import (
     CreateCardUsers, Constants, CreateInbox, AddCertificate, Search, 
     SearchHistory, NumberSocket, PhoneVerify, Ticket_insert_schema,
     TicketBron, ProfileView, AdsView, Ads2Profile_count, ViewCountSchema,
-    AppVisitors, LikeDislikeSchema, SendUserIsReadSchema
+    AppVisitors, LikeDislikeSchema, SendUserIsReadSchema, TicketStatusUpdateSchema
 )
 from models.models import PopUp
 from tokens import create_access_token, check_token, decode_token
@@ -1077,5 +1077,18 @@ async def read_popup(db: Session):
     ).all()
     if result:
         return result
+    else:
+        return None
+    
+    
+async def update_ticket_status(db: Session, id, ticket: TicketStatusUpdateSchema):
+    new_update = db.query(TicketBron)\
+    .filter(TicketBron.id == id)\
+    .update({
+        TicketBron.status : ticket.status
+    }, synchronize_session=False)
+    db.commit()
+    if new_update:
+        return True
     else:
         return None

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from db import get_db
-from models import Ticket_insert_schema
+from models import Ticket_insert_schema, TicketStatusUpdateSchema
 from tokens import Returns
 import crud
 
@@ -24,3 +24,12 @@ async def get_current_ticket(user_id: int, db: Session = Depends(get_db)):
         return Returns.object(result)
     else:
         return Returns.TICKET_NOT_FOUND
+    
+    
+@ticket_router.put("/ticket-status-update", dependencies=[Depends(HTTPBearer())])
+async def ticket_status_update(id: int, ticket: TicketStatusUpdateSchema, db: Session = Depends(get_db)):
+    result = await crud.update_ticket_status(db=db, id=id, ticket=ticket)
+    if result:
+        return Returns.UPDATED
+    else:
+        return Returns.NOT_UPDATED

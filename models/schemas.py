@@ -107,3 +107,10 @@ class SendUserIsReadSchema(BaseModel):
     
     class Config:
         orm_mode = True
+        
+        
+class TicketStatusUpdateSchema(BaseModel):
+    status              : int
+    
+    class Config:
+        orm_mode = True
