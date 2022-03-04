@@ -46,7 +46,7 @@ async def insert_inbox(req: CreateInbox, header_param: Request, db: Session = De
         return Returns.NOT_INSERTED
     
     
-@answers_router.put("update-is-read", dependencies=[Depends(HTTPBearer())])
+@answers_router.put("/update-is-read", dependencies=[Depends(HTTPBearer())])
 async def update_is_read(id: int, req: SendUserIsReadSchema, header_param: Request, db: Session = Depends(get_db)):
     user_id = crud.read_user_id_from_token(db=db, header_param=header_param)
     if not user_id:
@@ -56,3 +56,4 @@ async def update_is_read(id: int, req: SendUserIsReadSchema, header_param: Reque
         return Returns.UPDATED
     else:
         return Returns.NOT_UPDATED
+    
