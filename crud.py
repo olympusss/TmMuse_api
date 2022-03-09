@@ -311,7 +311,7 @@ def read_profile_by_profile_id(db: Session, profile_id):
         Profiles.is_terminal,
         Profiles.cinema_id,
         Profiles.own_promotion
-    ).filter(Profiles.id == profile_id).first()
+    ).filter(Profiles.id == profile_id).first() 
     if result:
         return result
     else:
