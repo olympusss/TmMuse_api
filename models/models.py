@@ -89,16 +89,6 @@ class PhoneNumbers(Base):
     phonenumbers_profiles = relationship("Profiles", back_populates="profiles_phonenumbers")
     
     
-class PromotionStatuses(Base):
-    __tablename__      = "promotion_statuses"
-    id                 = Column(Integer, primary_key=True, index=True)
-    promotion_status   = Column(Float)
-    profile_id         = Column(Integer, ForeignKey("profiles.id"))
-    created_at         = Column(DateTime, default=datetime.now())
-    updated_at         = Column(DateTime, default=datetime.now())
-    promotionstatuses_profiles = relationship("Profiles", back_populates="profiles_promotionstatuses")
-    
-    
 class Images(Base):
     __tablename__      = "images"
     id                 = Column(Integer, primary_key=True, index=True)
@@ -147,11 +137,11 @@ class Profiles(Base):
     order_in_list      = Column(Integer)
     free_time          = Column(String)
     required_promotion = Column(Boolean)
+    own_promotion      = Column(Float)
     created_at         = Column(DateTime, default=datetime.now())
     updated_at         = Column(DateTime, default=datetime.now())
     
     profiles_images            = relationship("Images"              , back_populates="images_profiles")
-    profiles_promotionstatuses = relationship("PromotionStatuses"   , back_populates="promotionstatuses_profiles")
     profiles_phonenumbers      = relationship("PhoneNumbers"        , back_populates="phonenumbers_profiles")
     profiles_banners           = relationship("Banners"             , back_populates="banners_profiles")
     profiles_categories        = relationship("Categories"          , back_populates="categories_profiles")

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, desc, asc, func
 from models import (
     Users, CodeVerify, InterestItems, Interests, UserInterests, Banners, 
-    Categories, PhoneNumbers, PromotionStatuses, Images, Profiles, Ads, 
+    Categories, PhoneNumbers, Images, Profiles, Ads, 
     JoinCategoryAds, GetProfile, Tags, Galleries, Posts, Certificates, 
     PromoCodes, Inbox, SendUser, Answers, AnsweredMessages, CardUsers, 
     CreateCardUsers, Constants, CreateInbox, AddCertificate, Search, 
@@ -258,16 +258,6 @@ def read_profile(db: Session, req: GetProfile):
     else:
         return None
 
-def read_promotion_by_profile_id(db: Session, profile_id):
-    get_promotion = db.query(
-        PromotionStatuses.id,
-        PromotionStatuses.promotion_status,
-        PromotionStatuses.profile_id
-    ).filter(PromotionStatuses.profile_id == profile_id).first()
-    if get_promotion:
-        return get_promotion
-    else:
-        return None
     
 def read_ads_random(db: Session):
     result = db.query(
@@ -319,7 +309,8 @@ def read_profile_by_profile_id(db: Session, profile_id):
         Profiles.free_time,
         Profiles.is_cash,
         Profiles.is_terminal,
-        Profiles.cinema_id
+        Profiles.cinema_id,
+        Profiles.own_promotion
     ).filter(Profiles.id == profile_id).first()
     if result:
         return result

@@ -50,9 +50,6 @@ async def get_profile_tiny(profile_id: int, db: Session = Depends(get_db)):
     result_profile = crud.read_profile_by_profile_id(db=db, profile_id=profile_id)
     if result_profile:
         results["profile"] = result_profile
-    results_promotion = crud.read_promotion_by_profile_id(db=db, profile_id=profile_id)
-    if results_promotion:
-        results["promotions"] = results_promotion
     results_phone_numbers = crud.read_phone_numbers_by_profile_id(db=db, profile_id=profile_id)
     if results_phone_numbers:
         results["phone_numbers"] = results_phone_numbers
