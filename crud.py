@@ -228,7 +228,8 @@ def read_profile(db: Session, req: GetProfile):
         Profiles.is_VIP,
         Profiles.category_id,
         Profiles.WiFi,
-        Profiles.average_check
+        Profiles.average_check,
+        Profiles.own_promotion
     )
     if len(req.tags_id) > 0:
         result = result.join(Tags, Tags.profile_id == Profiles.id)
