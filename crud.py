@@ -271,10 +271,10 @@ def read_ads_random(db: Session):
         Ads.is_main,
         Ads.site_url
     )
-    result = result.filter(Ads.is_main == None)
-    result = result.order_by(func.random())
+    result = result.filter(Ads.is_main == False)
+    result = result.order_by(func.random()).all()
     if result:
-        return result.all()
+        return result
     else:
         return None
         
