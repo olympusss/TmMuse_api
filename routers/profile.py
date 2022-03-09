@@ -12,19 +12,7 @@ profile_router = APIRouter()
 def get_profile(req: GetProfile, db: Session = Depends(get_db)):
     results_profile = crud.read_profile(db=db, req=req)
     if not results_profile:
-        return Returns.NULL
-    newList = []
-    for elem in results_profile:
-        elem = dict(elem)
-        promotion = crud.read_promotion_by_profile_id(db=db, profile_id=elem["id"])
-        if promotion:
-            elem["is_promotion"] = True
-            elem["promotion_status"] = promotion["promotion_status"]
-        else:
-            elem["is_promotion"] = False
-            elem["promotion_status"] = 0
-        newList.append(elem)
-    results_profile = newList  
+        return Returns.NULL 
     results = {}
     results["profiles"] = results_profile 
     if req.page == 1: 
