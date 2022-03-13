@@ -17,7 +17,7 @@ async def get_home(page: int, user_id: int = None, db: Session = Depends(get_db)
         result["popup"] = await crud.read_popup(db=db)
         result["card_user"] = await crud.read_card_user_by_user_id(db=db, user_id=user_id)
     else:
-        result["promotions"] = crud.read_promotions(db=db, page=page)
+        result["promotions"] = await crud.read_promotions(db=db, page=page)
     if result:
         await crud.create_app_visitors(db=db)
         return Returns.object(result)
