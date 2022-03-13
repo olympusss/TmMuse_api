@@ -369,10 +369,14 @@ def read_posts_by_profile_id(db: Session, profile_id):
         Posts.status,
         Posts.view_count,
         Posts.like,
-        Posts.dislike
-    ).filter(Posts.profile_id == profile_id)
+        Posts.dislike,
+        Profiles.instagram
+    )\
+    .join(Profiles, Profiles.id == Posts.profile_id)\
+    .filter(Posts.profile_id == profile_id)\
+    .all()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
