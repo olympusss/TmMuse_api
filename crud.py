@@ -629,7 +629,7 @@ def read_profile_by_profile_id_filter_is_promo(db: Session, profile_id):
     result = db.query(
         Profiles.is_promo
     ).filter(Profiles.id == profile_id).first()
-    if result.is_promo:
+    if result:
         return True
     else:
         return None
