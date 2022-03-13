@@ -575,6 +575,15 @@ def create_card_user(db: Session, req: CreateCardUsers, userID):
     else:
         return None
     
+async def read_card_user_by_user_id(db: Session, user_id):
+    result = db.query(CardUsers)\
+    .filter(CardUsers.user_id == user_id)\
+    .all()
+    if result:
+        return True
+    else:
+        return False
+    
 def read_constant_by_type(db: Session, type):
     result = db.query(
         Constants.id,
