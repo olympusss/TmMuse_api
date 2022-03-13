@@ -160,7 +160,7 @@ async def read_promotions(db: Session, page):
         Profiles.instagram,
     )
     result = result.join(Profiles, Profiles.id == Posts.profile_id)
-    result = result.offset(20 * (page-1)).limit(20).all()
+    result = result.offset(8 * (page-1)).limit(8).all()
     new_list = []
     for res in result:
         res_dict = dict(res)
