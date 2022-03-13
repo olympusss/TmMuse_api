@@ -642,9 +642,9 @@ def read_promo_codes_by_profile_id_user_id(db: Session, user_id, profile_id):
             PromoCodes.user_id == user_id, 
             PromoCodes.profile_id == profile_id, 
             PromoCodes.status == 1
-        ))
+        )).all()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
@@ -659,7 +659,7 @@ def read_promo_code_count_by_profile_id(db: Session, profile_id):
     if result:
         return result
     else:
-        return None
+        return 0
 
 
 def read_profile_promo_count_by_profile_id(db: Session, profile_id):

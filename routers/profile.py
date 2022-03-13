@@ -90,6 +90,7 @@ def get_promo_codes(req: GetPromoCodes, header_param: Request, db: Session = Dep
     # third condition
     promo_code_count = crud.read_promo_code_count_by_profile_id(db=db, profile_id=req.profile_id)
     profile_promo_count = crud.read_profile_promo_count_by_profile_id(db=db, profile_id=req.profile_id)
+    print(promo_code_count, profile_promo_count)
     if promo_code_count >= profile_promo_count["promo_count"]:
         return Returns.LIMIT
     
