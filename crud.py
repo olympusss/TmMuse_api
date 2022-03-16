@@ -723,11 +723,27 @@ def create_certificates(db: Session, req: AddCertificate, userID):
         return None
     
 def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
-    txt = f"amount={req.amount},profile_id={req.profile_id},user_id={userID}"
+    profile = db.query(
+        Profiles.nameTM,
+        Profiles.nameRU
+    )\
+    .filter(Profiles.id == req.profile_id)\
+    .first()
+    user = db.query(
+        Users.fullname
+    )\
+    .filter(Users.id == userID)\
+    .first()
+    txtTM = "Salam, {} \n! Siziň \"{}\" atly alan sertifikatyňyz üstünlikli hasaba alyndy. \
+        Adminstrasiýa tarapyndan tassyklanmagyna garaşyň. \n Sertifikat möçberi: {} TMT \
+            \n\n".format(user.fullname, profile.nameTM, req.amount)
+    txtRU = "Здравствуйте {} \n! Ваш сертификат \"{}\" успешно зарегистрирован. Дождитесь \
+        одобрения администрации. \n Сумма сертификата: {} TMT".format(user.fullname, profile.nameRU, req.amount)
+    txt = txtTM + txtRU
     new_add = Inbox(
         title   = "certificate",
         message = txt,
-        is_all  = None,
+        is_all  = False,
     )
     db.add(new_add)
     db.commit()
@@ -750,7 +766,7 @@ def create_send_user(db: Session, userID, inboxID):
     new_add = SendUser(
         user_id     = userID,
         inbox_id    = inboxID,
-        is_read     = None
+        is_read     = False
     )
     db.add(new_add)
     db.commit()
