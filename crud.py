@@ -480,8 +480,9 @@ def read_inbox_by_user_id(db: Session, user_id):
     )
     result = result.join(Inbox, Inbox.id == SendUser.inbox_id)
     result = result.filter(SendUser.user_id == user_id)
+    result = result.order_by(desc(Inbox.created_at)).all()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
@@ -490,23 +491,30 @@ def read_inbox(db: Session):
         Inbox.id,
         Inbox.title,
         Inbox.message,
-    ).filter(Inbox.is_all == True)
+        Inbox.created_at,
+        Inbox.updated_at
+    ).filter(Inbox.is_all == True)\
+    .order_by(desc(Inbox.created_at))\
+    .all()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
 def read_answered_messages_by_user_id(db: Session, user_id):
     result = db.query(
         AnsweredMessages.title,
-        AnsweredMessages.message
+        AnsweredMessages.message,
+        AnsweredMessages.created_at,
+        AnsweredMessages.updated_at
     )
     result = result.join(Answers, Answers.answered_msg_id == AnsweredMessages.id)
     result = result.join(Inbox, Inbox.id == Answers.inbox_id)
     result = result.join(SendUser, SendUser.inbox_id == Inbox.id)
     result = result.filter(SendUser.user_id == user_id)
+    result = result.order_by(desc(AnsweredMessages.created_at)).all()
     if result:
-        return result.all()
+        return result
     else:
         return None
 
@@ -734,15 +742,12 @@ def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
     )\
     .filter(Users.id == userID)\
     .first()
-    txtTM = "Salam, {}!\nSiziň \"{}\" atly alan sertifikatyňyz üstünlikli hasaba alyndy. \
-        Adminstrasiýa tarapyndan tassyklanmagyna garaşyň.\nSertifikat möçberi: {} TMT \
-            \n\n".format(user.fullname, profile.nameTM, req.amount)
-    txtRU = "Здравствуйте {}!\nВаш сертификат \"{}\" успешно зарегистрирован. Дождитесь \
-        одобрения администрации.\nСумма сертификата: {} TMT".format(user.fullname, profile.nameRU, req.amount)
+    txtTM = "Salam, {}!\nSiziň \"{}\" atly alan sertifikatyňyz üstünlikli hasaba alyndy. Adminstrasiýa tarapyndan tassyklanmagyna garaşyň.\nSertifikat möçberi: {} TMT \n\n".format(user.fullname, profile.nameTM, req.amount)
+    txtRU = "Здравствуйте {}!\nВаш сертификат \"{}\" успешно зарегистрирован. Дождитесь одобрения администрации.\nСумма сертификата: {} TMT".format(user.fullname, profile.nameRU, req.amount)
     txt = txtTM + txtRU
     new_add = Inbox(
         title   = "certificate",
-        message = txt.strip(),
+        message = txt,
         is_all  = False,
     )
     db.add(new_add)
