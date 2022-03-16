@@ -11,15 +11,6 @@ from socket_io import sio
 
 authentication_router = APIRouter()
 
-@authentication_router.get("/get-users")
-def get_users(db: Session = Depends(get_db)):
-    result = crud.read_all_users(db)
-    if result:
-        return Returns.object(result)
-    else: 
-        return Returns.NULL
-
-
 @authentication_router.post("/phone-verification")
 async def phone_verification(req: PhoneVerify, db: Session = Depends(get_db)):
     generated_code = random.randint(1000, 9999)

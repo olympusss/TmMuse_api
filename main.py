@@ -1,5 +1,4 @@
-from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI
 from db import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 from routers import authentication_router
@@ -13,6 +12,7 @@ from routers import constant_router
 from routers import search_router
 from routers import ticket_router
 from routers import view_count_router
+from routers import users_router
 import uvicorn
 from socket_io import socket_app
 
@@ -33,6 +33,7 @@ app.add_middleware(
 
 Base.metadata.create_all(engine)
 app.include_router(authentication_router   , tags=["Authentication"])
+app.include_router(users_router            , tags=["Users"])
 app.include_router(interest_router         , tags=["Interest"])
 app.include_router(home_router             , tags=["Home"])
 app.include_router(profile_router          , tags=["Profile"])

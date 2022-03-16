@@ -1,4 +1,3 @@
-from imp import get_tag
 from fastapi import Request
 from datetime import datetime
 from sqlalchemy.orm import Session
@@ -1120,5 +1119,29 @@ async def update_ticket_status(db: Session, id, ticket: TicketStatusUpdateSchema
     db.commit()
     if new_update:
         return True
+    else:
+        return None
+    
+    
+def read_user_info(db: Session, user_id):
+    result = db.query(
+        Users.id,
+        Users.fullname,
+        Users.phone_number,
+        CardUsers.date_of_birth,
+        CardUsers.expired,
+        CardUsers.gender,
+        CardUsers.email,
+        CardUsers.is_sms,
+        CardUsers.status,
+        CardUsers.card_id,
+    )
+    result = result.join(CardUsers, CardUsers.user_id == Users.id)
+    result = result.filter(Users.id == user_id)
+    result = result.filter(CardUsers.status == 1)
+    result = result.filter(func.date(CardUsers.expired) >= datetime.now().date())
+    result = result.all()
+    if result:
+        return result
     else:
         return None

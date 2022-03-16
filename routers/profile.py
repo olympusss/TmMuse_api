@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from db import get_db
-from tokens import Returns, check_token, decode_token
-from models import GetProfile, GetPromoCodes, AddCertificate, Categories
+from tokens import Returns
+from models import GetProfile, GetPromoCodes, AddCertificate
 import crud
 
 profile_router = APIRouter()
