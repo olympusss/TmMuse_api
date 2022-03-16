@@ -1125,7 +1125,7 @@ async def update_ticket_status(db: Session, id, ticket: TicketStatusUpdateSchema
     
 def read_user_info(db: Session, user_id):
     result = db.query(
-        Users.id,
+        Users.id.label("user_id"),
         Users.fullname,
         Users.phone_number,
         CardUsers.date_of_birth,
