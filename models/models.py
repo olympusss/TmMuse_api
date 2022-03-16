@@ -346,6 +346,7 @@ class Admin(Base):
     username           = Column(String)
     password           = Column(String)
     token              = Column(String)
+    notif_token        = Column(String)
     type               = Column(Integer, ForeignKey('admin_type.id'))
     created_at         = Column(DateTime(timezone=False), default=datetime.now)
     updated_at         = Column(DateTime(timezone=False), default=datetime.now)
