@@ -11,24 +11,17 @@ answers_router = APIRouter()
 @answers_router.get("/answers", dependencies=[Depends(HTTPBearer())])
 def get_answers(header_param: Request, db: Session = Depends(get_db)):
     user_id = crud.read_user_id_from_token(db=db, header_param=header_param)
+    new_list = []
     if user_id:
-        new_list = []
         first_response = crud.read_inbox_by_user_id(db=db, user_id=user_id)
         for first in first_response:
             new_list.append(first)
-        second_response = crud.read_inbox(db=db)
-        for second in second_response:
-            new_list.append(second)
         third_response = crud.read_answered_messages_by_user_id(db=db, user_id=user_id)
         for third in third_response:
             new_list.append(third)
-    else:
-        new_list = []
-        first_response = None
-        second_response = crud.read_inbox(db=db)
-        for second in second_response:
-            new_list.append(second)
-        third_response = None
+    second_response = crud.read_inbox(db=db)
+    for second in second_response:
+        new_list.append(second)
     results = new_list
     results = sorted(results, key=lambda d: d["created_at"], reverse=True)
     if results:
