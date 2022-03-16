@@ -734,11 +734,11 @@ def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
     )\
     .filter(Users.id == userID)\
     .first()
-    txtTM = "Salam, {} \n! Siziň \"{}\" atly alan sertifikatyňyz üstünlikli hasaba alyndy. \
-        Adminstrasiýa tarapyndan tassyklanmagyna garaşyň. \n Sertifikat möçberi: {} TMT \
+    txtTM = "Salam, {}!\nSiziň \"{}\" atly alan sertifikatyňyz üstünlikli hasaba alyndy. \
+        Adminstrasiýa tarapyndan tassyklanmagyna garaşyň.\nSertifikat möçberi: {} TMT \
             \n\n".format(user.fullname, profile.nameTM, req.amount)
-    txtRU = "Здравствуйте {} \n! Ваш сертификат \"{}\" успешно зарегистрирован. Дождитесь \
-        одобрения администрации. \n Сумма сертификата: {} TMT".format(user.fullname, profile.nameRU, req.amount)
+    txtRU = "Здравствуйте {}!\nВаш сертификат \"{}\" успешно зарегистрирован. Дождитесь \
+        одобрения администрации.\nСумма сертификата: {} TMT".format(user.fullname, profile.nameRU, req.amount)
     txt = txtTM + txtRU
     new_add = Inbox(
         title   = "certificate",
