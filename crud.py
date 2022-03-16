@@ -740,10 +740,9 @@ def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
     txtRU = "Здравствуйте {} \n! Ваш сертификат \"{}\" успешно зарегистрирован. Дождитесь \
         одобрения администрации. \n Сумма сертификата: {} TMT".format(user.fullname, profile.nameRU, req.amount)
     txt = txtTM + txtRU
-    txt.strip()
     new_add = Inbox(
         title   = "certificate",
-        message = txt,
+        message = txt.strip(),
         is_all  = False,
     )
     db.add(new_add)
