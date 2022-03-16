@@ -1102,7 +1102,9 @@ async def read_popup(db: Session):
         PopUp.descriptionTM,
         PopUp.descriptionRU,
         PopUp.profile_id
-    ).all()
+    )\
+    .order_by(func.random())\
+    .all()
     if result:
         return result
     else:
