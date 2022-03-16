@@ -1140,7 +1140,7 @@ def read_user_info(db: Session, user_id):
     result = result.filter(Users.id == user_id)
     result = result.filter(CardUsers.status == 1)
     result = result.filter(func.date(CardUsers.expired) >= datetime.now().date())
-    result = result.all()
+    result = result.distinct().all()
     if result:
         return result
     else:
