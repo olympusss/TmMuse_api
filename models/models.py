@@ -303,6 +303,7 @@ class CardUsers(Base):
     __tablename__      = "card_users"
     id                 = Column(Integer, primary_key=True, index=True)
     date_of_birth      = Column(Date)
+    expired            = Column(Date)
     gender             = Column(Integer)
     email              = Column(String)
     is_sms             = Column(Boolean)
