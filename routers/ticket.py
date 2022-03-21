@@ -20,7 +20,7 @@ async def add_ticket(ticket: Ticket_insert_schema, db: Session = Depends(get_db)
             return Returns.NOT_INSERTED
     await send_to_token(
         token=get_notif_token.notif_token,
-        ticket_id="{result}",
+        ticket_id=f"{result}",
         date=ticket.movie_date,
         time=ticket.movie_time,
         count_ticket=ticket.ticket_count
