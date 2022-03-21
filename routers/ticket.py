@@ -14,7 +14,10 @@ async def add_ticket(ticket: Ticket_insert_schema, db: Session = Depends(get_db)
     result = await crud.create_ticket(db=db, ticket=ticket)
     get_notif_token = await crud.read_admin_notif_token_by_cinema_id(db=db, cinema_id=ticket.cinema_id)
     if not get_notif_token:
-        return Returns.CURRENT_ADMIN_NOT_FOUND
+        if result:
+            return Returns.id(result)
+        else:
+            return Returns.NOT_INSERTED
     data_json = {"ticket_id" : result}
     send = await send_to_token(
         token=get_notif_token.notif_token,
