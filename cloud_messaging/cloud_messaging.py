@@ -18,7 +18,7 @@ async def send_to_token(token: str, data, date: str, time: str, count_ticket: in
             body=body
         ),
         data=data,
-        token=token
+        token="cFQ1AfZ1SfymEC0viMewww:APA91bFPv2eQ7S43PorlunVzG4Ee-a1ZA3nuFFldONSO14UBl6ik3Pfrdd0AIm4gJJ5vqCuFYLefS2A3XlFhQQ8efGrAvPihR9h57rGGrQGHcdrkbGdJpyuObshomawWRprPcGg3_uXm"
     )
     
     response = messaging.send(message=message)
