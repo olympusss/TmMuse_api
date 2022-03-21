@@ -18,16 +18,16 @@ async def add_ticket(ticket: Ticket_insert_schema, db: Session = Depends(get_db)
             return Returns.id(result)
         else:
             return Returns.NOT_INSERTED
-    # data_json = {"ticket_id" : result}
-    # send = await send_to_token(
-    #     token=get_notif_token.notif_token,
-    #     data=data_json,
-    #     date=ticket.movie_date,
-    #     time=ticket.movie_time,
-    #     count_ticket=ticket.ticket_count
-    # )
-    # if not send:
-    #     return Returns.NOT_SENDED_TO_PUSH
+    data_json = {"ticket_id" : result}
+    send = await send_to_token(
+        token=get_notif_token.notif_token,
+        data=data_json,
+        date=ticket.movie_date,
+        time=ticket.movie_time,
+        count_ticket=ticket.ticket_count
+    )
+    if not send:
+        return Returns.NOT_SENDED_TO_PUSH
     if result:
         return Returns.id(result)
     else:

@@ -1,3 +1,4 @@
+import main
 from typing import Any
 import socketio
 
