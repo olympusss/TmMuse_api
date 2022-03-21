@@ -10,7 +10,8 @@ from models import (
     CreateCardUsers, Constants, CreateInbox, AddCertificate, Search, 
     SearchHistory, NumberSocket, PhoneVerify, Ticket_insert_schema,
     TicketBron, ProfileView, AdsView, Ads2Profile_count, ViewCountSchema,
-    AppVisitors, LikeDislikeSchema, SendUserIsReadSchema, TicketStatusUpdateSchema
+    AppVisitors, LikeDislikeSchema, SendUserIsReadSchema, TicketStatusUpdateSchema,
+    Admin
 )
 from models.models import PopUp
 from tokens import create_access_token, check_token, decode_token
@@ -1141,6 +1142,19 @@ def read_user_info(db: Session, user_id):
     result = result.filter(CardUsers.status == 1)
     result = result.filter(func.date(CardUsers.expired) >= datetime.now().date())
     result = result.distinct().all()
+    if result:
+        return result
+    else:
+        return None
+    
+    
+    
+async def read_admin_notif_token_by_cinema_id(db: Session, cinema_id):
+    result = db.query(
+        Admin.notif_token
+    )\
+    .filter(Admin.id == cinema_id)\
+    .first()
     if result:
         return result
     else:

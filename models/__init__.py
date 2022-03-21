@@ -27,6 +27,7 @@ from models.models import ProfileView
 from models.models import Ads2Profile_count
 from models.models import AdsView
 from models.models import AppVisitors
+from models.models import Admin
 
 
 from models.schemas import PhoneVerify
@@ -43,3 +44,4 @@ from models.schemas import ViewCountSchema
 from models.schemas import LikeDislikeSchema
 from models.schemas import SendUserIsReadSchema
 from models.schemas import TicketStatusUpdateSchema
+from models.schemas import cloud_messaging_token

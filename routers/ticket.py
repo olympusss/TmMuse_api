@@ -3,6 +3,7 @@ from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from db import get_db
 from models import Ticket_insert_schema, TicketStatusUpdateSchema
+from cloud_messaging import send_to_token
 from tokens import Returns
 import crud
 
@@ -11,6 +12,19 @@ ticket_router = APIRouter()
 @ticket_router.post("/add-ticket", dependencies=[Depends(HTTPBearer())])
 async def add_ticket(ticket: Ticket_insert_schema, db: Session = Depends(get_db)):
     result = await crud.create_ticket(db=db, ticket=ticket)
+    get_notif_token = await crud.read_admin_notif_token_by_cinema_id(db=db, cinema_id=ticket.cinema_id)
+    if not get_notif_token:
+        return Returns.CURRENT_ADMIN_NOT_FOUND
+    data_json = {"ticket_id" : result}
+    send = await send_to_token(
+        token=get_notif_token.notif_token,
+        data=data_json,
+        date=ticket.movie_date,
+        time=ticket.movie_time,
+        count_ticket=ticket.ticket_count
+    )
+    if not send:
+        return Returns.NOT_SENDED_TO_PUSH
     if result:
         return Returns.id(result)
     else:

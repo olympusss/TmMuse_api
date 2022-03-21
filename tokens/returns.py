@@ -14,6 +14,8 @@ class Returns:
     TIMEOUT                        = {"error" : True,  "body" : "TIMEOUT"}
     PROMO_CAN_NOT_CREATE           = {"error" : True,  "body" : "PROMO_CAN_NOT_CREATE"}
     TICKET_NOT_FOUND               = {"error" : True,  "body" : "TICKET_NOT_FOUND"}
+    CURRENT_ADMIN_NOT_FOUND        = {"error" : True,  "body" : "CURRENT_ADMIN_NOT_FOUND"}
+    NOT_SENDED_TO_PUSH             = {"error" : True,  "body" : "NOT_SENDED_TO_PUSH"}
     
     def object(obj):
         return {"error" : False, "body" : obj}

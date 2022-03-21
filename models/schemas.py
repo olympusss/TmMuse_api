@@ -114,3 +114,9 @@ class TicketStatusUpdateSchema(BaseModel):
     
     class Config:
         orm_mode = True
+        
+        
+class cloud_messaging_token(BaseModel):
+    title               : str
+    body                : str
+    token               : str
