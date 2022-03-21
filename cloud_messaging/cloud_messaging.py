@@ -2,7 +2,7 @@ import firebase_admin
 from firebase_admin import messaging
 from firebase_admin import credentials
 
-cred = credentials.Certificate("/home/tmmuse_server/TmMuse_api/cloud_messaging/cloud_messaging_credential.json")
+cred = credentials.Certificate("/home/tmmuse_server/TmMuse_mobile/cloud_messaging/cloud_messaging_credential.json")
 # cred = credentials.Certificate("D:\\Project\\TmMuse_api\\cloud_messaging\\cloud_messaging_credential.json")
 default_app = firebase_admin.initialize_app(cred)
 
