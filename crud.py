@@ -971,7 +971,9 @@ async def read_current_ticket(db: Session, user_id):
         Profiles.descriptionTM,
         Profiles.descriptionRU,
         Users.fullname,
-        Users.phone_number
+        Users.phone_number,
+        TicketBron.created_at,
+        TicketBron.updated_at
     )
     result = result.join(Profiles, Profiles.id == TicketBron.profile_id)
     result = result.join(Users, Users.id == TicketBron.user_id)
