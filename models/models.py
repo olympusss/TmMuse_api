@@ -151,7 +151,6 @@ class Profiles(Base):
     profiles_certificates      = relationship("Certificates"        , back_populates="certificates_profiles")
     profiles_promocodes        = relationship("PromoCodes"          , back_populates="promocodes_profiles")
     profiles_popup             = relationship("PopUp"               , back_populates="popup_profiles")
-    profiles_ticketbron        = relationship("TicketBron"          , back_populates="ticketbron_profiles")
     profiles_tags              = relationship("Tags"                , back_populates="tags_profiles")
     
 
@@ -432,7 +431,7 @@ class TicketBron(Base):
     __tablename__       = "ticket_bron"
     id                  = Column(Integer, primary_key=True, index=True)
     cinema_id           = Column(Integer, ForeignKey("admin.id"))
-    profile_id          = Column(Integer, ForeignKey("profiles.id"))
+    profile_id          = Column(Integer)
     user_id             = Column(Integer, ForeignKey("users.id"))
     movie_date          = Column(Date)
     movie_time          = Column(Time)
@@ -443,5 +442,4 @@ class TicketBron(Base):
     created_at          = Column(DateTime(timezone=False), default=datetime.now)
     updated_at          = Column(DateTime(timezone=False), default=datetime.now)
     ticketbron_admin    = relationship("Admin"      , back_populates="admin_ticketbron")
-    ticketbron_profiles = relationship("Profiles"   , back_populates="profiles_ticketbron")
     ticketbron_users    = relationship("Users"      , back_populates="users_ticketbron")
