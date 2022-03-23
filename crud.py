@@ -210,7 +210,7 @@ def read_category(db: Session):
 
 
 def read_profile(db: Session, req: GetProfile):
-    if req.sort == 0:
+    if req.sort == 1:
         sorting = asc(Profiles.updated_at)
     else:
         sorting = desc(Profiles.updated_at)
@@ -880,7 +880,7 @@ def read_phone_number_and_code(db: Session, phone_number, code):
 def delete_number_socket(db: Session, phone_number):
     new_delete = db.query(NumberSocket)\
     .filter(NumberSocket.phone_number == phone_number)\
-    .delete(synchronize_session=None)
+    .delete(synchronize_session=False)
     db.commit()
     if new_delete:
         return True
