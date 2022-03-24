@@ -97,7 +97,7 @@ async def create_user_interest_item(db: Session, user_id, item_id):
         return None
     
 async def delete_user_interest(db: Session, user_id):
-    delete = db.query(UserInterests).filter(UserInterests.user_id == user_id).\
+    delete = await db.query(UserInterests).filter(UserInterests.user_id == user_id).\
         delete(synchronize_session=None)
     db.commit()
     if delete:
@@ -131,7 +131,7 @@ async def read_movies(db: Session):
     new_list = []
     for res in result:
         res = dict(res)
-        image = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
+        image = await read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
         if image:
             res["image"] = image
         new_list.append(res)
@@ -164,7 +164,7 @@ async def read_promotions(db: Session, page):
     new_list = []
     for res in result:
         res_dict = dict(res)
-        phone_numbers = read_phone_numbers_by_profile_id(db=db, profile_id=res.profile_id)
+        phone_numbers = await read_phone_numbers_by_profile_id(db=db, profile_id=res.profile_id)
         res_dict["numbers"] = list(phone_numbers)
         new_list.append(res_dict)
     result = new_list
@@ -245,7 +245,7 @@ async def read_profile(db: Session, req: GetProfile):
     new_list = []
     for res in result:
         res = dict(res)
-        get_images = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
+        get_images = await read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
         get_phone_number = await read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
         if get_images:
             res["image"] = get_images
@@ -461,7 +461,7 @@ async def read_ads_by_join_category_id(db: Session, profile_id):
     else:
         return None
     
-def read_user_by_fullname_and_phone_number(db: Session, fullname, phone_number):
+async def read_user_by_fullname_and_phone_number(db: Session, fullname, phone_number):
     result = db.query(
         Users.id
     ).filter(and_(Users.fullname == fullname, Users.phone_number == phone_number)).first()
@@ -551,9 +551,9 @@ async def read_profile_card_promotion(db: Session, limit, page):
     new_list = []
     for res in result:
         res = dict(res)
-        get_images = read_images_by_profile_id(db=db, profile_id=res["id"])
-        get_images_vr = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
-        get_phone_number = read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
+        get_images = await read_images_by_profile_id(db=db, profile_id=res["id"])
+        get_images_vr = await read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
+        get_phone_number = await read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
         if get_images:
             res["images"] = get_images
         if get_images_vr:
@@ -807,8 +807,8 @@ async def search_profile_by_like(db: Session, req: Search, page, limit):
     new_list = []
     for res in result:
         res = dict(res)
-        get_images = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
-        get_phone_number = read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
+        get_images = await read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
+        get_phone_number = await read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
         if get_images:
             res["image"] = get_images
         if get_phone_number:
@@ -852,8 +852,8 @@ async def create_number_socket(db: Session, number: PhoneVerify, code):
     new_add = NumberSocket(
         phone_number = number.phone_number,
         code         = code,
-        created_at   = datetime.now(),
-        updated_at   = datetime.now()
+        created_at   = datetime.now,
+        updated_at   = datetime.now
     )
     db.add(new_add)
     db.commit()
@@ -981,7 +981,7 @@ async def read_current_ticket(db: Session, user_id):
     new_list = []
     for res in result:
         res = dict(res)
-        image = read_images_by_profile_id_isVR_false(db=db, profile_id=res["profile_id"])
+        image = await read_images_by_profile_id_isVR_false(db=db, profile_id=res["profile_id"])
         if image:
             res["image"] = image
         new_list.append(res)
@@ -1038,13 +1038,13 @@ async def create_view_count(db: Session, view: ViewCountSchema):
     
 async def create_click_count(db: Session, click: ViewCountSchema):
     if click.type == "post":
-        profile_id = db.query(Posts.profile_id).filter(Posts.id == click.ads_id).first()
+        profile_id = await db.query(Posts.profile_id).filter(Posts.id == click.ads_id).first()
     if click.type == "ads":
-        profile_id = db.query(Ads.profile_id).filter(Ads.id == click.ads_id).first()
+        profile_id = await db.query(Ads.profile_id).filter(Ads.id == click.ads_id).first()
     if click.type == "banner":
-        profile_id = db.query(Images.profile_id).filter(Images.id == click.ads_id).first()
+        profile_id = await db.query(Images.profile_id).filter(Images.id == click.ads_id).first()
     if click.type == "popup":
-        profile_id = db.query(PopUp.profile_id).filter(PopUp.id == click.ads_id).first()
+        profile_id = await db.query(PopUp.profile_id).filter(PopUp.id == click.ads_id).first()
     new_add = Ads2Profile_count(
         ads_id      = click.ads_id,
         profile_id  = profile_id["profile_id"],
