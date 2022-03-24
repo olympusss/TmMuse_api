@@ -246,7 +246,7 @@ async def read_profile(db: Session, req: GetProfile):
     for res in result:
         res = dict(res)
         get_images = read_images_by_profile_id_isVR_false(db=db, profile_id=res["id"])
-        get_phone_number = read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
+        get_phone_number = await read_phone_numbers_by_profile_id(db=db, profile_id=res["id"])
         if get_images:
             res["image"] = get_images
         if get_phone_number:
@@ -894,7 +894,7 @@ async def read_user_id_from_token(db: Session, header_param: Request):
     if not payload:
         return None
     phone_number: str = payload.get("phone_number")
-    result = read_user_by_phone_number(db=db, phone_number=phone_number)
+    result = await read_user_by_phone_number(db=db, phone_number=phone_number)
     if result:
         return result.id
     else:
