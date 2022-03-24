@@ -9,7 +9,7 @@ users_router = APIRouter()
 
 @users_router.get("/get-users")
 async def get_users(db: Session = Depends(get_db)):
-    result = crud.read_all_users(db)
+    result = await crud.read_all_users(db)
     if result:
         return Returns.object(result)
     else: 
@@ -18,10 +18,10 @@ async def get_users(db: Session = Depends(get_db)):
     
 @users_router.get("/get-user-info", dependencies=[Depends(HTTPBearer())])
 async def get_user_info(header_param: Request, db: Session = Depends(get_db)):
-    user_id = crud.read_user_id_from_token(db=db, header_param=header_param)
+    user_id = await crud.read_user_id_from_token(db=db, header_param=header_param)
     if not user_id:
         return Returns.USER_NOT_FOUND
-    result = crud.read_user_info(db=db, user_id=user_id)
+    result = await crud.read_user_info(db=db, user_id=user_id)
     if result:
         return Returns.object(result)
     else:

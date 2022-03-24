@@ -20,7 +20,7 @@ from translation import translation2TM, translation2RU
 import random
 from datetime import datetime
 
-def read_all_users(db: Session):
+async def read_all_users(db: Session):
     result = db.query(
         Users.id,
         Users.fullname,
@@ -34,7 +34,7 @@ def read_all_users(db: Session):
     else:
         return None
 
-def read_user_by_phone_number(db: Session, phone_number: str):
+async def read_user_by_phone_number(db: Session, phone_number: str):
     result = db.query(
         Users.id,
         Users.fullname,
@@ -46,7 +46,7 @@ def read_user_by_phone_number(db: Session, phone_number: str):
     else:
         return None
 
-def create_user(db: Session, req: CodeVerify):
+async def create_user(db: Session, req: CodeVerify):
     newDict = {
         "fullname"      : req.fullname,
         "phone_number"  : req.phone_number
@@ -66,7 +66,7 @@ def create_user(db: Session, req: CodeVerify):
         return None
     
     
-def read_interests(db: Session):
+async def read_interests(db: Session):
     result = db.query(
         Interests.id,
         Interests.titleTM,
@@ -74,7 +74,7 @@ def read_interests(db: Session):
     ).all()
     return result
 
-def read_interest_items_by_interest_id(db: Session, interest_id):
+async def read_interest_items_by_interest_id(db: Session, interest_id):
     result = db.query(
         InterestItems.id,
         InterestItems.titleTM,
@@ -86,7 +86,7 @@ def read_interest_items_by_interest_id(db: Session, interest_id):
         return None
     
     
-def create_user_interest_item(db: Session, user_id, item_id):
+async def create_user_interest_item(db: Session, user_id, item_id):
     new_add = UserInterests(user_id = user_id, interest_item_id = item_id)
     db.add(new_add)
     db.commit()
@@ -96,7 +96,7 @@ def create_user_interest_item(db: Session, user_id, item_id):
     else:
         return None
     
-def delete_user_interest(db: Session, user_id):
+async def delete_user_interest(db: Session, user_id):
     delete = db.query(UserInterests).filter(UserInterests.user_id == user_id).\
         delete(synchronize_session=None)
     db.commit()
@@ -198,7 +198,7 @@ def read_categories_by_ads(db: Session, ads_id):
     else:
         return None
 
-def read_category(db: Session):
+async def read_category(db: Session):
     result = db.query(
         Categories.id,
         Categories.name
@@ -209,7 +209,7 @@ def read_category(db: Session):
         return None
 
 
-def read_profile(db: Session, req: GetProfile):
+async def read_profile(db: Session, req: GetProfile):
     if req.sort == 1:
         sorting = asc(Profiles.updated_at)
     else:
@@ -260,7 +260,7 @@ def read_profile(db: Session, req: GetProfile):
         return None
 
     
-def read_ads_random(db: Session):
+async def read_ads_random(db: Session):
     result = db.query(
         Ads.id,
         Ads.nameTM,
@@ -278,7 +278,7 @@ def read_ads_random(db: Session):
     else:
         return None
         
-def read_profile_by_profile_id(db: Session, profile_id):
+async def read_profile_by_profile_id(db: Session, profile_id):
     result = db.query(
         Profiles.id,
         Profiles.nameTM,
@@ -320,7 +320,7 @@ def read_profile_by_profile_id(db: Session, profile_id):
     else:
         return None
     
-def read_phone_numbers_by_profile_id(db: Session, profile_id):
+async def read_phone_numbers_by_profile_id(db: Session, profile_id):
     result = db.query(
         PhoneNumbers.id,
         PhoneNumbers.phone_number,
@@ -331,7 +331,7 @@ def read_phone_numbers_by_profile_id(db: Session, profile_id):
     else:
         return None
     
-def read_images_by_profile_id(db: Session, profile_id):
+async def read_images_by_profile_id(db: Session, profile_id):
     result = db.query(
         Images.id,
         Images.small_image,
@@ -344,7 +344,7 @@ def read_images_by_profile_id(db: Session, profile_id):
         return None
     
 
-def read_galleries_by_profile_id(db: Session, profile_id):
+async def read_galleries_by_profile_id(db: Session, profile_id):
     result = db.query(
         Galleries.id,
         Galleries.medium_image,
@@ -356,7 +356,7 @@ def read_galleries_by_profile_id(db: Session, profile_id):
     else:
         return None
     
-def read_posts_by_profile_id(db: Session, profile_id):
+async def read_posts_by_profile_id(db: Session, profile_id):
     result = db.query(
         Posts.id,
         Posts.titleTM,
@@ -381,7 +381,7 @@ def read_posts_by_profile_id(db: Session, profile_id):
     else:
         return None
     
-def read_certificates_by_profile_id(db: Session, profile_id):
+async def read_certificates_by_profile_id(db: Session, profile_id):
     result = db.query(
         Certificates.id,
         Certificates.amount,
@@ -394,7 +394,7 @@ def read_certificates_by_profile_id(db: Session, profile_id):
     else:
         return None
     
-def read_promo_codes_by_profile_id(db: Session, profile_id):
+async def read_promo_codes_by_profile_id(db: Session, profile_id):
     result = db.query(
         PromoCodes.id,
         PromoCodes.promo_code,
@@ -408,7 +408,7 @@ def read_promo_codes_by_profile_id(db: Session, profile_id):
         return None
 
     
-def read_tags_by_profile_id(db: Session, profile_id):
+async def read_tags_by_profile_id(db: Session, profile_id):
     result = db.query(
         Tags.id,
         Tags.tagTM,
@@ -422,7 +422,7 @@ def read_tags_by_profile_id(db: Session, profile_id):
     else:
         return None
     
-def read_tags_by_category_id(db: Session, category_id):
+async def read_tags_by_category_id(db: Session, category_id):
     result = db.query(
         Tags.id,
         Tags.tagTM,
@@ -433,7 +433,7 @@ def read_tags_by_category_id(db: Session, category_id):
     else:
         return []
     
-def read_category_by_profile_id(db: Session, profile_id):
+async def read_category_by_profile_id(db: Session, profile_id):
     result = db.query(
         Categories.id,
         Categories.name
@@ -445,7 +445,7 @@ def read_category_by_profile_id(db: Session, profile_id):
     else:
         return None
     
-def read_ads_by_join_category_id(db: Session, profile_id):
+async def read_ads_by_join_category_id(db: Session, profile_id):
     result = db.query(
         Ads.id,
         Ads.nameTM,
@@ -470,7 +470,7 @@ def read_user_by_fullname_and_phone_number(db: Session, fullname, phone_number):
     else:
         return None
 
-def read_inbox_by_user_id(db: Session, user_id):
+async def read_inbox_by_user_id(db: Session, user_id):
     result = db.query(
         SendUser.is_read,
         Inbox.title,
@@ -487,7 +487,7 @@ def read_inbox_by_user_id(db: Session, user_id):
     else:
         return None
     
-def read_inbox(db: Session):
+async def read_inbox(db: Session):
     result = db.query(
         Inbox.id,
         Inbox.title,
@@ -502,7 +502,7 @@ def read_inbox(db: Session):
     else:
         return None
     
-def read_answered_messages_by_user_id(db: Session, user_id):
+async def read_answered_messages_by_user_id(db: Session, user_id):
     result = db.query(
         AnsweredMessages.title,
         AnsweredMessages.message,
@@ -532,7 +532,7 @@ async def update_send_user_is_read(db: Session, id, req: SendUserIsReadSchema):
     
     
     
-def read_profile_card_promotion(db: Session, limit, page):
+async def read_profile_card_promotion(db: Session, limit, page):
     result = db.query(
         Profiles.id,
         Profiles.nameTM,
@@ -567,7 +567,7 @@ def read_profile_card_promotion(db: Session, limit, page):
     else:
         return None
     
-def create_card_user(db: Session, req: CreateCardUsers, userID):
+async def create_card_user(db: Session, req: CreateCardUsers, userID):
     cardID = random.randrange(1000000000, 9999999999)
     cardID = str(cardID)
     str2date = datetime.strptime(req.date, '%d/%m/%Y')
@@ -597,7 +597,7 @@ async def read_card_user_by_user_id(db: Session, user_id):
     else:
         return False
     
-def read_constant_by_type(db: Session, type):
+async def read_constant_by_type(db: Session, type):
     result = db.query(
         Constants.id,
         Constants.titleTM,
@@ -612,7 +612,7 @@ def read_constant_by_type(db: Session, type):
     else:
         return None
     
-def create_inbox(db: Session, req: CreateInbox):
+async def create_inbox(db: Session, req: CreateInbox):
     new_add = Inbox(
         title   = req.title,
         message = req.message,
@@ -626,14 +626,14 @@ def create_inbox(db: Session, req: CreateInbox):
     else:
         return None
     
-def read_inbox_by_title_and_message(db: Session, title, message):
+async def read_inbox_by_title_and_message(db: Session, title, message):
     result = db.query(Inbox.id).filter(and_(Inbox.title == title, Inbox.message == message)).first()
     if result:
         return result
     else:
         return None
     
-def create_send_user(db: Session, userID, inboxID):
+async def create_send_user(db: Session, userID, inboxID):
     new_add = SendUser(
         is_read     = False,
         user_id     = userID,
@@ -648,7 +648,7 @@ def create_send_user(db: Session, userID, inboxID):
         return None
     
     
-def read_profile_by_profile_id_filter_is_promo(db: Session, profile_id):
+async def read_profile_by_profile_id_filter_is_promo(db: Session, profile_id):
     result = db.query(
         Profiles.is_promo
     ).filter(Profiles.id == profile_id).first()
@@ -657,7 +657,7 @@ def read_profile_by_profile_id_filter_is_promo(db: Session, profile_id):
     else:
         return None
     
-def read_promo_codes_by_profile_id_user_id(db: Session, user_id, profile_id):
+async def read_promo_codes_by_profile_id_user_id(db: Session, user_id, profile_id):
     result = db.query(
         PromoCodes.promo_code
     ).filter(
@@ -671,7 +671,7 @@ def read_promo_codes_by_profile_id_user_id(db: Session, user_id, profile_id):
     else:
         return None
     
-def read_promo_code_count_by_profile_id(db: Session, profile_id):
+async def read_promo_code_count_by_profile_id(db: Session, profile_id):
     result = db.query(
         PromoCodes
     ).filter(
@@ -685,7 +685,7 @@ def read_promo_code_count_by_profile_id(db: Session, profile_id):
         return 0
 
 
-def read_profile_promo_count_by_profile_id(db: Session, profile_id):
+async def read_profile_promo_count_by_profile_id(db: Session, profile_id):
     result = db.query(
         Profiles.promo_count
     ).filter(Profiles.id == profile_id).first()
@@ -695,7 +695,7 @@ def read_profile_promo_count_by_profile_id(db: Session, profile_id):
         return None
     
     
-def create_promo_code(db: Session, profileID, userID):
+async def create_promo_code(db: Session, profileID, userID):
     generated_promo_code = random.randrange(10000000, 99999999)
     new_add = PromoCodes(
         promo_code = generated_promo_code,
@@ -711,7 +711,7 @@ def create_promo_code(db: Session, profileID, userID):
     else:
         return None
     
-def create_certificates(db: Session, req: AddCertificate, userID):
+async def create_certificates(db: Session, req: AddCertificate, userID):
     get_profile = db.query(
         Profiles.is_certificate
     ).filter(Profiles.id == req.profile_id).first()
@@ -731,7 +731,7 @@ def create_certificates(db: Session, req: AddCertificate, userID):
     else:
         return None
     
-def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
+async def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
     profile = db.query(
         Profiles.nameTM,
         Profiles.nameRU
@@ -759,7 +759,7 @@ def create_inbox_by_certificates(db: Session, req: AddCertificate, userID):
     else:
         return None
     
-def read_inbox_by_message(db: Session, txt):
+async def read_inbox_by_message(db: Session, txt):
     result = db.query(
         Inbox.id
     ).filter(Inbox.message == txt).first()
@@ -783,7 +783,7 @@ def create_send_user(db: Session, userID, inboxID):
         return None
     
     
-def search_profile_by_like(db: Session, req: Search, page, limit):
+async def search_profile_by_like(db: Session, req: Search, page, limit):
     result = db.query(
         Profiles.id,
         Profiles.nameTM,
@@ -820,7 +820,7 @@ def search_profile_by_like(db: Session, req: Search, page, limit):
     else:
         return None
     
-def create_search_history(db: Session, txt):
+async def create_search_history(db: Session, txt):
     result = db.query(SearchHistory.text).filter(SearchHistory.text == txt).all()
     if result:
         db.query(SearchHistory).filter(SearchHistory.text == txt).\
@@ -838,7 +838,7 @@ def create_search_history(db: Session, txt):
         db.refresh(new_add)
     return True
 
-def read_search_history(db: Session):
+async def read_search_history(db: Session):
     result = db.query(
         SearchHistory.text,
     ).order_by(desc(SearchHistory.count)).limit(20).all()
@@ -848,7 +848,7 @@ def read_search_history(db: Session):
         return None
     
     
-def create_number_socket(db: Session, number: PhoneVerify, code):
+async def create_number_socket(db: Session, number: PhoneVerify, code):
     new_add = NumberSocket(
         phone_number = number.phone_number,
         code         = code,
@@ -864,7 +864,7 @@ def create_number_socket(db: Session, number: PhoneVerify, code):
         return None
     
     
-def read_phone_number_and_code(db: Session, phone_number, code):
+async def read_phone_number_and_code(db: Session, phone_number, code):
     result = db.query(
         NumberSocket.phone_number,
         NumberSocket.code,
@@ -877,7 +877,7 @@ def read_phone_number_and_code(db: Session, phone_number, code):
     else:
         return None
     
-def delete_number_socket(db: Session, phone_number):
+async def delete_number_socket(db: Session, phone_number):
     new_delete = db.query(NumberSocket)\
     .filter(NumberSocket.phone_number == phone_number)\
     .delete(synchronize_session=False)
@@ -888,7 +888,7 @@ def delete_number_socket(db: Session, phone_number):
         return None
     
     
-def read_user_id_from_token(db: Session, header_param: Request):
+async def read_user_id_from_token(db: Session, header_param: Request):
     token = check_token(header_param=header_param)
     payload = decode_token(token=token)
     if not payload:
@@ -901,7 +901,7 @@ def read_user_id_from_token(db: Session, header_param: Request):
         return None
     
     
-def read_interest_items_by_user_id(db: Session, user_id):
+async def read_interest_items_by_user_id(db: Session, user_id):
     result = db.query(
         InterestItems.id,
         InterestItems.titleTM,
@@ -1126,7 +1126,7 @@ async def update_ticket_status(db: Session, id, ticket: TicketStatusUpdateSchema
         return None
     
     
-def read_user_info(db: Session, user_id):
+async def read_user_info(db: Session, user_id):
     result = db.query(
         Users.id.label("user_id"),
         Users.fullname,

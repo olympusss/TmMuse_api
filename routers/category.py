@@ -7,8 +7,8 @@ import crud
 category_router = APIRouter()
 
 @category_router.get("/get-category")
-def get_category(db: Session = Depends(get_db)):
-    get_category = crud.read_category(db=db)
+async def get_category(db: Session = Depends(get_db)):
+    get_category = await crud.read_category(db=db)
     if get_category:
         return Returns.object(get_category)
     else:

@@ -18,7 +18,7 @@ def decode_token(token: str):
         return False
 
 
-def check_token(header_param: Request):
+async def check_token(header_param: Request):
     token = header_param.headers.get('Authorization')
     if not token:
         return False

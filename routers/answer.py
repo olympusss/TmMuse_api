@@ -9,17 +9,17 @@ from models import CreateInbox, SendUserIsReadSchema
 answers_router = APIRouter()
 
 @answers_router.get("/answers", dependencies=[Depends(HTTPBearer())])
-def get_answers(header_param: Request, db: Session = Depends(get_db)):
-    user_id = crud.read_user_id_from_token(db=db, header_param=header_param)
+async def get_answers(header_param: Request, db: Session = Depends(get_db)):
+    user_id = await crud.read_user_id_from_token(db=db, header_param=header_param)
     new_list = []
     if user_id:
-        first_response = crud.read_inbox_by_user_id(db=db, user_id=user_id)
+        first_response = await crud.read_inbox_by_user_id(db=db, user_id=user_id)
         for first in first_response:
             new_list.append(first)
-        third_response = crud.read_answered_messages_by_user_id(db=db, user_id=user_id)
+        third_response = await crud.read_answered_messages_by_user_id(db=db, user_id=user_id)
         for third in third_response:
             new_list.append(third)
-    second_response = crud.read_inbox(db=db)
+    second_response = await crud.read_inbox(db=db)
     for second in second_response:
         new_list.append(second)
     results = new_list
@@ -31,16 +31,16 @@ def get_answers(header_param: Request, db: Session = Depends(get_db)):
     
 @answers_router.post("/insert-inbox", dependencies=[Depends(HTTPBearer())])
 async def insert_inbox(req: CreateInbox, header_param: Request, db: Session = Depends(get_db)):
-    result_inbox = crud.create_inbox(db=db, req=req)
+    result_inbox = await crud.create_inbox(db=db, req=req)
     if not result_inbox:
         return Returns.NOT_INSERTED
-    user_id = crud.read_user_id_from_token(db=db, header_param=header_param)
+    user_id = await crud.read_user_id_from_token(db=db, header_param=header_param)
     if not user_id:
         return Returns.USER_NOT_FOUND
-    inbox_id = crud.read_inbox_by_title_and_message(db=db, title=req.title, message=req.message)
+    inbox_id = await crud.read_inbox_by_title_and_message(db=db, title=req.title, message=req.message)
     if not inbox_id:
         return Returns.NULL
-    result = crud.create_send_user(db=db, userID=user_id, inboxID=inbox_id["id"])
+    result = await crud.create_send_user(db=db, userID=user_id, inboxID=inbox_id["id"])
     if result:
         return Returns.INSERTED
     else:
@@ -49,7 +49,7 @@ async def insert_inbox(req: CreateInbox, header_param: Request, db: Session = De
     
 @answers_router.put("/update-is-read", dependencies=[Depends(HTTPBearer())])
 async def update_is_read(id: int, req: SendUserIsReadSchema, header_param: Request, db: Session = Depends(get_db)):
-    user_id = crud.read_user_id_from_token(db=db, header_param=header_param)
+    user_id = await crud.read_user_id_from_token(db=db, header_param=header_param)
     if not user_id:
         return Returns.USER_NOT_FOUND
     result = await crud.update_send_user_is_read(db=db, id=id, req=req)
