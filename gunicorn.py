@@ -15,5 +15,7 @@ backlog = 2048
 worker_connections = 1024
 timeout = 30
 keepalive = 2
+limit_request_fields = 32768
+limit_request_line = 8190
 errorlog = '-'
 accesslog = '-'
