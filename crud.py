@@ -916,7 +916,7 @@ async def read_interest_items_by_user_id(db: Session, user_id):
         return None
     
     
-def read_images_by_profile_id_isVR_false(db: Session, profile_id):
+async def read_images_by_profile_id_isVR_false(db: Session, profile_id):
     result = db.query(
         Images.id,
         Images.small_image,
