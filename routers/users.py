@@ -19,6 +19,7 @@ async def get_users(db: Session = Depends(get_db)):
 @users_router.get("/get-user-info", dependencies=[Depends(HTTPBearer())])
 async def get_user_info(header_param: Request, db: Session = Depends(get_db)):
     user_id = await crud.read_user_id_from_token(db=db, header_param=header_param)
+    print(user_id)
     if not user_id:
         return Returns.USER_NOT_FOUND
     result = await crud.read_user_info(db=db, user_id=user_id)

@@ -51,7 +51,7 @@ async def create_user(db: Session, req: CodeVerify):
         "fullname"      : req.fullname,
         "phone_number"  : req.phone_number
     }
-    access_token = create_access_token(newDict)
+    access_token = await create_access_token(newDict)
     new_add = Users(
         fullname     = req.fullname,
         phone_number = req.phone_number,
@@ -889,8 +889,8 @@ async def delete_number_socket(db: Session, phone_number):
     
     
 async def read_user_id_from_token(db: Session, header_param: Request):
-    token = check_token(header_param=header_param)
-    payload = decode_token(token=token)
+    token = await check_token(header_param=header_param)
+    payload = await decode_token(token=token)
     if not payload:
         return None
     phone_number: str = payload.get("phone_number")
