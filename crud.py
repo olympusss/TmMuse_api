@@ -852,8 +852,8 @@ async def create_number_socket(db: Session, number: PhoneVerify, code):
     new_add = NumberSocket(
         phone_number = number.phone_number,
         code         = code,
-        created_at   = datetime.now,
-        updated_at   = datetime.now
+        created_at   = datetime.now(),
+        updated_at   = datetime.now()
     )
     db.add(new_add)
     db.commit()

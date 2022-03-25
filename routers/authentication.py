@@ -6,8 +6,7 @@ import random
 import crud
 from tokens import Returns
 from datetime import datetime
-from socket_io import sio
-
+from pusher_handler import pusher_client
 
 authentication_router = APIRouter()
 
@@ -15,8 +14,11 @@ authentication_router = APIRouter()
 async def phone_verification(req: PhoneVerify, db: Session = Depends(get_db)):
     generated_code = random.randint(1000, 9999)
     result = await crud.create_number_socket(db=db, number=req, code=generated_code)
-    data = f"{req.phone_number},{generated_code}"
-    await sio.emit("onMessage", data)
+    data = {
+        "phone_number" : req.phone_number,
+        "code"         : generated_code
+    }
+    pusher_client.trigger('tmmuse', 'onMessage', data)
     if result:
         return Returns.INSERTED
     else:
