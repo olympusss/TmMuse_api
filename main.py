@@ -1,4 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from db import get_db
+import random
+import crud
+from tokens import Returns
 from db import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 from routers import authentication_router
@@ -13,11 +18,47 @@ from routers import search_router
 from routers import ticket_router
 from routers import view_count_router
 from routers import users_router
+from models import PhoneVerify
 import uvicorn
-from socket_io import socket_app
+import socketio
 
 
 app = FastAPI()
+sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi')
+socketio_app = socketio.ASGIApp(sio, app)
+
+@sio.event
+def connect(sid, environ):
+    print("connect ", sid)
+
+
+@sio.on('onMessage')
+async def chat_message(sid, data):
+    print("message ", data)
+    await sio.emit('onMessage', 'hi ' + data)
+
+
+@sio.event
+def disconnect(sid):
+    print('disconnect ', sid)
+
+
+
+@authentication_router.post("/phone-verification")
+async def phone_verification(req: PhoneVerify, db: Session = Depends(get_db)):
+    generated_code = random.randint(1000, 9999)
+    result = await crud.create_number_socket(db=db, number=req, code=generated_code)
+    data = {
+        "phone_number" : req.phone_number,
+        "code"         : generated_code
+    }
+
+    await sio.emit("onMessage", data)
+    if result:
+        return Returns.INSERTED
+    else:
+        return Returns.NOT_INSERTED
+
 
 origins = ["*"]
 methods = ["*"]
@@ -30,6 +71,7 @@ app.add_middleware(
     allow_methods=methods,
     allow_headers=headers,
 )
+
 
 Base.metadata.create_all(engine)
 app.include_router(authentication_router   , tags=["Authentication"])
@@ -46,7 +88,6 @@ app.include_router(ticket_router           , tags=["Ticket"])
 app.include_router(view_count_router       , tags=["Click_View"])
 
     
-app.mount("/", socket_app)
        
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=3000)
