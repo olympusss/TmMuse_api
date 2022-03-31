@@ -22,7 +22,6 @@ async def get_interest(db: Session = Depends(get_db)):
 @interest_router.post("/add-user-interest", dependencies=[Depends(HTTPBearer())])
 async def add_user_interest(header_param: Request, req: AddUserInterest, db: Session = Depends(get_db)):
     token = await check_token(header_param=header_param)
-    await crud.delete_user_interest(db=db, user_id=req.user_id)
     if not token:
         return Returns.TOKEN_NOT_FOUND
     for elem in req.items_id:

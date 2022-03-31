@@ -87,23 +87,33 @@ async def read_interest_items_by_interest_id(db: Session, interest_id):
     
     
 async def create_user_interest_item(db: Session, user_id, item_id):
-    new_add = UserInterests(user_id = user_id, interest_item_id = item_id)
+    new_add = UserInterests(
+        user_id = user_id, 
+        interest_item_id = item_id
+    )
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    print(new_add)
     if new_add:
         return True
     else:
         return None
     
-async def delete_user_interest(db: Session, user_id):
-    delete = await db.query(UserInterests).filter(UserInterests.user_id == user_id).\
-        delete(synchronize_session=None)
-    db.commit()
-    if delete:
-        return True
-    else:
-        return None
+# async def delete_user_interest(db: Session, user_id):
+#     get_user_interest = await db.query(UserInterests.interest_item_id).filter(UserInterests.user_id == user_id).all()
+#     if get_user_interest:
+#         for interest in get_user_interest:
+#             await db.query(InterestItems).filter(InterestItems.id == interest.interest_item_id)\
+#                 .delete(synchronize_session=False)
+#             db.commit()
+#     delete = await db.query(UserInterests.interest_item_id).filter(UserInterests.user_id == user_id)\
+#         .delete(synchronize_session=False)
+#     db.commit()
+#     if delete:
+#         return True
+#     else:
+#         return None
     
 async def read_banner(db: Session):
     result = db.query(
