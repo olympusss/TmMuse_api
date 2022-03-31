@@ -9,7 +9,20 @@ from datetime import datetime
 from pusher_handler import pusher_client
 
 authentication_router = APIRouter()
-    
+
+@authentication_router.post("/phone-verification")
+async def phone_verification(req: PhoneVerify, db: Session = Depends(get_db)):
+    generated_code = random.randint(1000, 9999)
+    result = await crud.create_number_socket(db=db, number=req, code=generated_code)
+    data = {
+        "phone_number" : req.phone_number,
+        "code"         : generated_code
+    }
+    pusher_client.trigger('tmmuse', 'onMessage', data)
+    if result:
+        return Returns.INSERTED
+    else:
+        return Returns.NOT_INSERTED    
             
 @authentication_router.post("/code-verification")
 async def code_verification(req: CodeVerify, db: Session = Depends(get_db)):
