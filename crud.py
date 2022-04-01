@@ -167,9 +167,12 @@ async def read_promotions(db: Session, page):
         Posts.like,
         Posts.dislike,
         Posts.profile_id,
+        Posts.created_at,
+        Posts.updated_at,
         Profiles.instagram,
     )
     result = result.join(Profiles, Profiles.id == Posts.profile_id)
+    result = result.order_by(desc(Posts.updated_at))
     result = result.offset(8 * (page-1)).limit(8).all()
     new_list = []
     for res in result:
