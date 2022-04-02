@@ -1090,19 +1090,43 @@ async def create_like_dislike(db: Session, like: LikeDislikeSchema):
             db.query(Posts).filter(Posts.id == like.id)\
             .update({Posts.like : Posts.like + 1}, synchronize_session=False)
             db.commit()
+            if like.type == True:
+                get_dislike = db.query(Posts.dislike).filter(Posts.id == like.id).first()
+                if get_dislike.dislike > 0:
+                    db.query(Posts).filter(Posts.id == like.id)\
+                    .update({Posts.dislike : Posts.dislike - 1}, synchronize_session=False)
+                    db.commit()
         else:
             db.query(Posts).filter(Posts.id == like.id)\
             .update({Posts.dislike : Posts.dislike + 1}, synchronize_session=False)
-            db.commit()           
+            db.commit()
+            if like.type == True:
+                get_dislike = db.query(Posts.like).filter(Posts.id == like.id).first()
+                if get_dislike.like > 0:
+                    db.query(Posts).filter(Posts.id == like.id)\
+                    .update({Posts.like : Posts.like - 1}, synchronize_session=False)
+                    db.commit()   
     else:
         if like.column_type == "like":
             db.query(Profiles).filter(Profiles.id == like.id)\
             .update({Profiles.like : Profiles.like + 1}, synchronize_session=False)
             db.commit()
+            if like.type == True:
+                get_dislike = db.query(Profiles.dislike).filter(Profiles.id == like.id).first()
+                if get_dislike.dislike > 0:
+                    db.query(Profiles).filter(Profiles.id == like.id)\
+                    .update({Profiles.dislike : Profiles.dislike - 1}, synchronize_session=False)
+                    db.commit()
         else:
             db.query(Profiles).filter(Profiles.id == like.id)\
             .update({Profiles.dislike : Profiles.dislike + 1}, synchronize_session=False)
             db.commit()
+            if like.type == True:
+                get_dislike = db.query(Profiles.like).filter(Profiles.id == like.id).first()
+                if get_dislike.like > 0:
+                    db.query(Profiles).filter(Profiles.id == like.id)\
+                    .update({Profiles.like : Profiles.like - 1}, synchronize_session=False)
+                    db.commit()            
     return True
 
 

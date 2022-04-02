@@ -97,6 +97,7 @@ class LikeDislikeSchema(BaseModel):
     id              : int
     column_type     : str
     table_type      : str
+    type            : bool
     
     class Config:
         orm_mode = True
