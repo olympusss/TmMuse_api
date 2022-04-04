@@ -14,14 +14,17 @@ async def get_answers(header_param: Request, db: Session = Depends(get_db)):
     new_list = []
     if user_id:
         first_response = await crud.read_inbox_by_user_id(db=db, user_id=user_id)
-        for first in first_response:
-            new_list.append(first)
+        if first_response:
+            for first in first_response:
+                new_list.append(first)
         third_response = await crud.read_answered_messages_by_user_id(db=db, user_id=user_id)
-        for third in third_response:
-            new_list.append(third)
+        if third_response:
+            for third in third_response:
+                new_list.append(third)
     second_response = await crud.read_inbox(db=db)
-    for second in second_response:
-        new_list.append(second)
+    if second_response:
+        for second in second_response:
+            new_list.append(second)
     results = new_list
     results = sorted(results, key=lambda d: d["created_at"], reverse=True)
     if results:

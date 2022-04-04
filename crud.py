@@ -485,6 +485,7 @@ async def read_user_by_fullname_and_phone_number(db: Session, fullname, phone_nu
 
 async def read_inbox_by_user_id(db: Session, user_id):
     result = db.query(
+        Inbox.id,
         SendUser.is_read,
         Inbox.title,
         Inbox.message,
