@@ -1,12 +1,13 @@
 import multiprocessing
 import os
 from dotenv import load_dotenv
+import gevent
 load_dotenv()
 
 
 bind = "0.0.0.0:3000"
 
-worker_class = "async"
+worker_class = gevent
 workers = multiprocessing.cpu_count () * 2 + 1
 debug = os.environ.get("debug", "false") == "true"
 max_requests = 999999
