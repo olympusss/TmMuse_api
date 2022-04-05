@@ -6,6 +6,7 @@ cred = credentials.Certificate("/home/tmmuse_server/TmMuse_mobile/cloud_messagin
 # cred = credentials.Certificate("D:\\Project\\TmMuse_api\\cloud_messaging\\cloud_messaging_credential.json")
 default_app = firebase_admin.initialize_app(cred)
 
+
 # * Send to token
 async def send_to_token(token: str, ticket_id: str, date: str, time: str, count_ticket: int):
     title = "Täze petek sargyt edildi / Заказан новый билет"
