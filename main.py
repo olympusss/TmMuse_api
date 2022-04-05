@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from db import Base, engine
-from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 from routers import authentication_router
 from routers import interest_router
 from routers import home_router
@@ -15,20 +17,29 @@ from routers import view_count_router
 from routers import users_router
 import uvicorn
 
+middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins=['*'],
+        allow_credentials=True,
+        allow_methods=['*'],
+        allow_headers=['*']
+    )
+]
 
-app = FastAPI()
+app = FastAPI(middleware=middleware)
 
-origins = ["*"]
-methods = ["*"]
-headers = ["*"]
+# origins = ["*"]
+# methods = ["*"]
+# headers = ["*"]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=methods,
-    allow_headers=headers,
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=methods,
+#     allow_headers=headers,
+# )
 
 Base.metadata.create_all(engine)
 app.include_router(authentication_router   , tags=["Authentication"])
