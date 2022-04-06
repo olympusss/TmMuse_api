@@ -193,6 +193,7 @@ async def read_ads(db: Session):
         Ads.nameRU,
         Ads.comment_of_admin,
         Ads.image,
+        Ads.site_url,
         Ads.profile_id,
         Ads.is_main
     ).filter(Ads.is_main == True).all()
@@ -466,7 +467,8 @@ async def read_ads_by_join_category_id(db: Session, profile_id):
         Ads.comment_of_admin,
         Ads.image,
         Ads.profile_id,
-        Ads.is_main
+        Ads.is_main,
+        Ads.site_url
     )
     result = result.filter(Ads.profile_id == profile_id)
     if result:
