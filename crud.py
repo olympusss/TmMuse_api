@@ -267,7 +267,7 @@ async def read_profile(db: Session, req: GetProfile):
             res["phone_numbers"] = get_phone_number
         new_list.append(res)
     result = new_list
-    # result = sorted(result, key=lambda d: d["is_VIP"], reverse=True)
+    result = sorted(result, key=lambda d: d["is_VIP"], reverse=True)
     if result:
         return result
     else:
