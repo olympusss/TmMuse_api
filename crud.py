@@ -252,8 +252,8 @@ async def read_profile(db: Session, req: GetProfile):
         result = result.join(Categories, Categories.id == Profiles.category_id)
         result = result.filter(or_(Categories.id == elem for elem in req.category))
     result = result.filter(Profiles.status != 0)
-    result = result.order_by(desc(Profiles.is_VIP))
     result = result.order_by(sorting)
+    result = result.order_by(desc(Profiles.is_VIP))
     result = result.offset(req.limit * (req.page - 1)).limit(req.limit)
     result = result.distinct().all()
     new_list = []
