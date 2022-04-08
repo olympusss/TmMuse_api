@@ -252,10 +252,11 @@ async def read_profile(db: Session, req: GetProfile):
         result = result.join(Categories, Categories.id == Profiles.category_id)
         result = result.filter(or_(Categories.id == elem for elem in req.category))
     result = result.filter(Profiles.status != 0)
-    result = result.order_by(sorting)
     result = result.order_by(desc(Profiles.is_VIP))
+    result = result.order_by(sorting)
     result = result.offset(req.limit * (req.page - 1)).limit(req.limit)
     result = result.distinct().all()
+    # result = sorted(result, key=lambda d: d["is_VIP"], reverse=True)
     new_list = []
     for res in result:
         res = dict(res)
@@ -267,7 +268,6 @@ async def read_profile(db: Session, req: GetProfile):
             res["phone_numbers"] = get_phone_number
         new_list.append(res)
     result = new_list
-    result = sorted(result, key=lambda d: d["is_VIP"], reverse=True)
     if result:
         return result
     else:
