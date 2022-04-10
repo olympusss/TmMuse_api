@@ -649,6 +649,7 @@ async def read_inbox_by_title_and_message(db: Session, title, message):
     else:
         return None
     
+    
 async def create_send_user(db: Session, userID, inboxID):
     new_add = SendUser(
         is_read     = False,
@@ -731,8 +732,8 @@ async def create_certificates(db: Session, req: AddCertificate, userID):
     get_profile = db.query(
         Profiles.is_certificate
     ).filter(Profiles.id == req.profile_id).first()
-    if not get_profile.is_certificate:
-        return None
+    # if not get_profile.is_certificate:
+    #     return None
     new_add = Certificates(
         amount     = req.amount,
         profile_id = req.profile_id,
@@ -781,20 +782,6 @@ async def read_inbox_by_message(db: Session, txt):
     ).filter(Inbox.message == txt).first()
     if result:
         return result
-    else:
-        return None
-    
-def create_send_user(db: Session, userID, inboxID):
-    new_add = SendUser(
-        user_id     = userID,
-        inbox_id    = inboxID,
-        is_read     = False
-    )
-    db.add(new_add)
-    db.commit()
-    db.refresh(new_add)
-    if new_add:
-        return True
     else:
         return None
     
