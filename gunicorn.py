@@ -7,15 +7,17 @@ import gevent
 
 bind = "0.0.0.0:3000"
 
-worker_class = "uvicorn.workers.UvicornWorker"
+# worker_class = "uvicorn.workers.UvicornWorker"
 workers = multiprocessing.cpu_count () * 2 + 1
 debug = os.environ.get("debug", "false") == "true"
+keepalive = 120
+timeout = 120
+worker_class = "gthread"
+threads = 3
 max_requests = 999999
 reload = debug
 backlog = 2048
 worker_connections = 1024
-timeout = 30
-keepalive = 2
 limit_request_fields = 32768
 limit_request_line = 8190
 errorlog = '-'
