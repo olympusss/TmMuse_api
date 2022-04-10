@@ -7,7 +7,7 @@ import gevent
 
 bind = "0.0.0.0:3000"
 
-worker_class = 'gevent'
+worker_class = "uvicorn.workers.UvicornWorker"
 workers = multiprocessing.cpu_count () * 2 + 1
 debug = os.environ.get("debug", "false") == "true"
 max_requests = 999999
