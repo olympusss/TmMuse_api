@@ -2,11 +2,12 @@ import multiprocessing
 import os
 from dotenv import load_dotenv
 load_dotenv()
+import gevent
 
 
 bind = "0.0.0.0:3000"
 
-worker_class = "uvicorn.workers.UvicornWorker"
+worker_class = gevent
 workers = multiprocessing.cpu_count () * 2 + 1
 debug = os.environ.get("debug", "false") == "true"
 max_requests = 999999
