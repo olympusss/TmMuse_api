@@ -12,7 +12,7 @@ workers = multiprocessing.cpu_count () * 2 + 1
 debug = os.environ.get("debug", "false") == "true"
 keepalive = 120
 timeout = 120
-worker_class = "gthread"
+worker_class = "uvicorn.workers.UvicornWorker"
 threads = 3
 max_requests = 999999
 reload = debug
