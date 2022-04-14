@@ -19,9 +19,11 @@ async def get_home(page: int, user_id: int = None, db: Session = Depends(get_db)
     else:
         result["promotions"] = await crud.read_promotions(db=db, page=page)
     db.commit()
+    db.close()
     if result:
         await crud.create_app_visitors(db=db)
         db.commit()
+        db.close()
         return Returns.object(result)
     else:
         return Returns.NULL

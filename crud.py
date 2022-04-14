@@ -124,6 +124,7 @@ async def read_banner(db: Session):
         Banners.profile_id
     ).order_by(desc(Banners.order)).all()
     db.commit()
+    db.close()
     if result:
         return result
     else:
@@ -140,6 +141,7 @@ async def read_movies(db: Session):
         Profiles.updated_at
     ).filter(Profiles.category_id == 2).order_by(desc(Profiles.created_at)).limit(20).all()
     db.commit()
+    db.close()
     new_list = []
     for res in result:
         res = dict(res)
@@ -177,6 +179,7 @@ async def read_promotions(db: Session, page):
     result = result.order_by(desc(Posts.updated_at))
     result = result.offset(8 * (page-1)).limit(8).all()
     db.commit()
+    db.close()
     new_list = []
     for res in result:
         res_dict = dict(res)
@@ -201,6 +204,7 @@ async def read_ads(db: Session):
         Ads.is_main
     ).filter(Ads.is_main == True).all()
     db.commit()
+    db.close()
     if result:
         return result
     else:
@@ -613,6 +617,7 @@ async def read_card_user_by_user_id(db: Session, user_id):
     .filter(CardUsers.user_id == user_id)\
     .all()
     db.commit()
+    db.close()
     if result:
         return True
     else:
@@ -1140,6 +1145,7 @@ async def read_popup(db: Session):
     .order_by(func.random())\
     .all()
     db.commit()
+    db.close()
     if result:
         return result
     else:
