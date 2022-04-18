@@ -29,6 +29,7 @@ async def read_all_users(db: Session):
         Users.created_at,
         Users.updated_at
     ).all()
+    db.close()
     if result:
         return result
     else:
@@ -41,6 +42,7 @@ async def read_user_by_phone_number(db: Session, phone_number: str):
         Users.phone_number,
         Users.token
     ).filter(Users.phone_number == phone_number).first()
+    db.close()
     if result:
         return result
     else:
@@ -60,6 +62,7 @@ async def create_user(db: Session, req: CodeVerify):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return True
     else:
@@ -72,6 +75,7 @@ async def read_interests(db: Session):
         Interests.titleTM,
         Interests.titleRU
     ).all()
+    db.close()
     return result
 
 async def read_interest_items_by_interest_id(db: Session, interest_id):
@@ -80,6 +84,7 @@ async def read_interest_items_by_interest_id(db: Session, interest_id):
         InterestItems.titleTM,
         InterestItems.titleRU
     ).filter(InterestItems.interest_id == interest_id).all()
+    db.close()
     if result:
         return result
     else:
@@ -94,7 +99,7 @@ async def create_user_interest_item(db: Session, user_id, item_id):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
-    print(new_add)
+    db.close()
     if new_add:
         return True
     else:
@@ -211,6 +216,7 @@ def read_categories_by_ads(db: Session, ads_id):
         Categories.name
     ).join(JoinCategoryAds, and_(JoinCategoryAds.category_id == Categories.id, JoinCategoryAds.ads_id == ads_id)).\
         all()
+    db.close()
     if result:
         return result
     else:
@@ -221,6 +227,7 @@ async def read_category(db: Session):
         Categories.id,
         Categories.name
     ).all()
+    db.close()
     if result:
         return result
     else:
@@ -260,6 +267,7 @@ async def read_profile(db: Session, req: GetProfile):
     result = result.order_by(sorting)
     result = result.offset(req.limit * (req.page - 1)).limit(req.limit)
     result = result.distinct().all()
+    db.close()
     new_list = []
     for res in result:
         res = dict(res)
@@ -291,6 +299,7 @@ async def read_ads_random(db: Session):
     )
     result = result.filter(Ads.is_main == False)
     result = result.order_by(func.random()).all()
+    db.close()
     if result:
         return result
     else:
@@ -333,6 +342,7 @@ async def read_profile_by_profile_id(db: Session, profile_id):
         Profiles.WiFi,
         Profiles.required_promotion
     ).filter(Profiles.id == profile_id).first() 
+    db.close()
     if result:
         return result
     else:
@@ -343,9 +353,10 @@ async def read_phone_numbers_by_profile_id(db: Session, profile_id):
         PhoneNumbers.id,
         PhoneNumbers.phone_number,
         PhoneNumbers.profile_id
-    ).filter(PhoneNumbers.profile_id == profile_id)
+    ).filter(PhoneNumbers.profile_id == profile_id).all()
+    db.close()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
@@ -355,9 +366,10 @@ async def read_images_by_profile_id(db: Session, profile_id):
         Images.small_image,
         Images.large_image,
         Images.isVR,
-    ).filter(Images.profile_id == profile_id)
+    ).filter(Images.profile_id == profile_id).all()
+    db.close()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
@@ -368,9 +380,10 @@ async def read_galleries_by_profile_id(db: Session, profile_id):
         Galleries.medium_image,
         Galleries.large_image,
         Galleries.profile_id
-    ).filter(Galleries.profile_id == profile_id)
+    ).filter(Galleries.profile_id == profile_id).all()
+    db.close()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
@@ -394,6 +407,7 @@ async def read_posts_by_profile_id(db: Session, profile_id):
     .join(Profiles, Profiles.id == Posts.profile_id)\
     .filter(Posts.profile_id == profile_id)\
     .all()
+    db.close()
     if result:
         return result
     else:
@@ -406,9 +420,10 @@ async def read_certificates_by_profile_id(db: Session, profile_id):
         Certificates.status,
         Certificates.user_id,
         Certificates.profile_id
-    ).filter(Certificates.profile_id == profile_id)
+    ).filter(Certificates.profile_id == profile_id).all()
+    db.close()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
@@ -419,9 +434,10 @@ async def read_promo_codes_by_profile_id(db: Session, profile_id):
         PromoCodes.status,
         PromoCodes.user_id,
         PromoCodes.profile_id
-    ).filter(PromoCodes.profile_id == profile_id)
+    ).filter(PromoCodes.profile_id == profile_id).all()
+    db.close()
     if result:
-        return result.all()
+        return result
     else:
         return None
 
@@ -435,6 +451,7 @@ async def read_tags_by_profile_id(db: Session, profile_id):
     )
     result = result.join(Profiles, Profiles.id == Tags.profile_id)
     result = result.filter(Profiles.id == profile_id).all()
+    db.close()
     if result:
         return result
     else:
@@ -446,6 +463,7 @@ async def read_tags_by_category_id(db: Session, category_id):
         Tags.tagTM,
         Tags.tagRU
     ).filter(Tags.category_id == category_id).all()
+    db.close()
     if result:
         return result
     else:
@@ -457,9 +475,10 @@ async def read_category_by_profile_id(db: Session, profile_id):
         Categories.name
     )
     result = result.join(Profiles, Profiles.category_id == Categories.id)
-    result = result.filter(Profiles.id == profile_id)
+    result = result.filter(Profiles.id == profile_id).all()
+    db.close()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
@@ -474,9 +493,10 @@ async def read_ads_by_join_category_id(db: Session, profile_id):
         Ads.is_main,
         Ads.site_url
     )
-    result = result.filter(Ads.profile_id == profile_id)
+    result = result.filter(Ads.profile_id == profile_id).all()
+    db.close()
     if result:
-        return result.all()
+        return result
     else:
         return None
     
@@ -484,6 +504,7 @@ async def read_user_by_fullname_and_phone_number(db: Session, fullname, phone_nu
     result = db.query(
         Users.id
     ).filter(and_(Users.fullname == fullname, Users.phone_number == phone_number)).first()
+    db.close()
     if result:
         return result
     else:
@@ -502,6 +523,7 @@ async def read_inbox_by_user_id(db: Session, user_id):
     result = result.join(Inbox, Inbox.id == SendUser.inbox_id)
     result = result.filter(SendUser.user_id == user_id)
     result = result.order_by(desc(Inbox.created_at)).all()
+    db.close()
     if result:
         return result
     else:
@@ -517,6 +539,7 @@ async def read_inbox(db: Session):
     ).filter(Inbox.is_all == True)\
     .order_by(desc(Inbox.created_at))\
     .all()
+    db.close()
     if result:
         return result
     else:
@@ -534,6 +557,7 @@ async def read_answered_messages_by_user_id(db: Session, user_id):
     result = result.join(SendUser, SendUser.inbox_id == Inbox.id)
     result = result.filter(SendUser.user_id == user_id)
     result = result.order_by(desc(AnsweredMessages.created_at)).all()
+    db.close()
     if result:
         return result
     else:
@@ -545,6 +569,7 @@ async def update_send_user_is_read(db: Session, id, req: SendUserIsReadSchema):
             SendUser.is_read : req.is_read
         }, synchronize_session=False)
     db.commit()
+    db.close()
     if new_update:
         return True
     else:
@@ -568,6 +593,7 @@ async def read_profile_card_promotion(db: Session, limit, page):
     result = result.filter(Profiles.tm_muse_card > 0)
     result = result.order_by(desc(Profiles.updated_at))
     result = result.offset(limit * (page - 1)).limit(limit).all()
+    db.close()
     new_list = []
     for res in result:
         res = dict(res)
@@ -603,6 +629,7 @@ async def create_card_user(db: Session, req: CreateCardUsers, userID):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return True
     else:
@@ -628,6 +655,7 @@ async def read_constant_by_type(db: Session, type):
         Constants.contentTM_dark,
         Constants.contentRU_dark
     ).filter(Constants.type == type).all()
+    db.close()
     if result:
         return result
     else:
@@ -642,6 +670,7 @@ async def create_inbox(db: Session, req: CreateInbox):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return True
     else:
@@ -649,6 +678,7 @@ async def create_inbox(db: Session, req: CreateInbox):
     
 async def read_inbox_by_title_and_message(db: Session, title, message):
     result = db.query(Inbox.id).filter(and_(Inbox.title == title, Inbox.message == message)).first()
+    db.close()
     if result:
         return result
     else:
@@ -664,6 +694,7 @@ async def create_send_user(db: Session, userID, inboxID):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return True
     else:
@@ -674,6 +705,7 @@ async def read_profile_by_profile_id_filter_is_promo(db: Session, profile_id):
     result = db.query(
         Profiles.is_promo
     ).filter(Profiles.id == profile_id).first()
+    db.close()
     if result:
         return True
     else:
@@ -688,6 +720,7 @@ async def read_promo_codes_by_profile_id_user_id(db: Session, user_id, profile_i
             PromoCodes.profile_id == profile_id, 
             PromoCodes.status == 1
         )).all()
+    db.close()
     if result:
         return result
     else:
@@ -701,6 +734,7 @@ async def read_promo_code_count_by_profile_id(db: Session, profile_id):
             PromoCodes.profile_id == profile_id, 
             PromoCodes.status == 1
         )).count()
+    db.close()
     if result:
         return result
     else:
@@ -711,6 +745,7 @@ async def read_profile_promo_count_by_profile_id(db: Session, profile_id):
     result = db.query(
         Profiles.promo_count
     ).filter(Profiles.id == profile_id).first()
+    db.close()
     if result:
         return result
     else:
@@ -728,6 +763,7 @@ async def create_promo_code(db: Session, profileID, userID):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return generated_promo_code
     else:
@@ -737,6 +773,7 @@ async def create_certificates(db: Session, req: AddCertificate, userID):
     get_profile = db.query(
         Profiles.is_certificate
     ).filter(Profiles.id == req.profile_id).first()
+    db.close()
     # if not get_profile.is_certificate:
     #     return None
     new_add = Certificates(
@@ -748,6 +785,7 @@ async def create_certificates(db: Session, req: AddCertificate, userID):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return True
     else:
@@ -760,11 +798,13 @@ async def create_inbox_by_certificates(db: Session, req: AddCertificate, userID)
     )\
     .filter(Profiles.id == req.profile_id)\
     .first()
+    db.close()
     user = db.query(
         Users.fullname
     )\
     .filter(Users.id == userID)\
     .first()
+    db.close()
     txtTM = "Salam, {}!\nSiziň \"{}\" atly alan sertifikatyňyz üstünlikli hasaba alyndy. Adminstrasiýa tarapyndan tassyklanmagyna garaşyň.\nSertifikat möçberi: {} TMT \n\n".format(user.fullname, profile.nameTM, req.amount)
     txtRU = "Здравствуйте {}!\nВаш сертификат \"{}\" успешно зарегистрирован. Дождитесь одобрения администрации.\nСумма сертификата: {} TMT".format(user.fullname, profile.nameRU, req.amount)
     txt = txtTM + txtRU
@@ -776,6 +816,7 @@ async def create_inbox_by_certificates(db: Session, req: AddCertificate, userID)
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return txt
     else:
@@ -785,6 +826,7 @@ async def read_inbox_by_message(db: Session, txt):
     result = db.query(
         Inbox.id
     ).filter(Inbox.message == txt).first()
+    db.close()
     if result:
         return result
     else:
@@ -812,6 +854,7 @@ async def search_profile_by_like(db: Session, req: Search, page, limit):
             func.lower(Profiles.nameRU).like(f"%{(req.text).translate(translation2RU)}%")
             ))
     result = result.offset(20 * (page-1)).limit(limit).all()
+    db.close()
     new_list = []
     for res in result:
         res = dict(res)
@@ -836,6 +879,7 @@ async def create_search_history(db: Session, txt):
                 SearchHistory.count : SearchHistory.count + 1
             }, synchronize_session=None)
         db.commit()
+        db.close()
     else:
         new_add = SearchHistory(
             text     = txt,
@@ -844,12 +888,14 @@ async def create_search_history(db: Session, txt):
         db.add(new_add)
         db.commit()
         db.refresh(new_add)
+        db.close()
     return True
 
 async def read_search_history(db: Session):
     result = db.query(
         SearchHistory.text,
     ).order_by(desc(SearchHistory.count)).limit(20).all()
+    db.close()
     if result:
         return result
     else:
@@ -866,6 +912,7 @@ async def create_number_socket(db: Session, number: PhoneVerify, code):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return True
     else:
@@ -880,6 +927,7 @@ async def read_phone_number_and_code(db: Session, phone_number, code):
     )\
     .filter(and_(NumberSocket.phone_number == phone_number, NumberSocket.code == code))\
     .first()
+    db.close()
     if result:
         return result
     else:
@@ -890,6 +938,7 @@ async def delete_number_socket(db: Session, phone_number):
     .filter(NumberSocket.phone_number == phone_number)\
     .delete(synchronize_session=False)
     db.commit()
+    db.close()
     if new_delete:
         return True
     else:
@@ -918,6 +967,7 @@ async def read_interest_items_by_user_id(db: Session, user_id):
     )
     result = result.join(UserInterests, UserInterests.interest_item_id == InterestItems.id)
     result = result.filter(UserInterests.user_id == user_id).all()
+    db.close()
     if result:
         return result
     else:
@@ -933,6 +983,7 @@ async def read_images_by_profile_id_isVR_false(db: Session, profile_id):
     )
     result = result.filter(Images.profile_id == profile_id)
     result = result.filter(Images.isVR == False).all()
+    db.close()
     if result:
         return result
     else:
@@ -956,6 +1007,7 @@ async def create_ticket(db: Session, ticket: Ticket_insert_schema):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return new_add.id
     else:
@@ -986,6 +1038,7 @@ async def read_current_ticket(db: Session, user_id):
     result = result.join(Profiles, Profiles.id == TicketBron.profile_id)
     result = result.join(Users, Users.id == TicketBron.user_id)
     result = result.filter(TicketBron.user_id == user_id).order_by(desc(TicketBron.id)).all()
+    db.close()
     new_list = []
     for res in result:
         res = dict(res)
@@ -1007,11 +1060,13 @@ async def create_profile_view(db: Session, profile_id):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     new_update = db.query(Profiles).filter(Profiles.id == profile_id).\
         update({
             Profiles.view_count : Profiles.view_count + 1
         }, synchronize_session=False)
     db.commit()
+    db.close()
     if new_add:
         return True
     else:
@@ -1021,15 +1076,23 @@ async def create_profile_view(db: Session, profile_id):
 async def create_view_count(db: Session, view: ViewCountSchema):
     if view.type == "post":
         profile_id = db.query(Posts.profile_id).filter(Posts.id == view.ads_id).first()
+        db.close()
         db.query(Posts).filter(Posts.id == view.ads_id)\
         .update({Posts.view_count : Posts.view_count + 1}, synchronize_session=False)
         db.commit()
+        db.close()
     if view.type == "ads":
         profile_id = db.query(Ads.profile_id).filter(Ads.id == view.ads_id).first()
+        db.close()
+        
     if view.type == "banner":
         profile_id = db.query(Images.profile_id).filter(Images.id == view.ads_id).first()
+        db.close()
+        
     if view.type == "popup":
         profile_id = db.query(PopUp.profile_id).filter(PopUp.id == view.ads_id).first()
+        db.close()
+        
     new_add = AdsView(
         ads_id      = view.ads_id,
         profile_id  = profile_id["profile_id"],
@@ -1039,6 +1102,7 @@ async def create_view_count(db: Session, view: ViewCountSchema):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return True
     else:
@@ -1047,12 +1111,20 @@ async def create_view_count(db: Session, view: ViewCountSchema):
 async def create_click_count(db: Session, click: ViewCountSchema):
     if click.type == "post":
         profile_id = await db.query(Posts.profile_id).filter(Posts.id == click.ads_id).first()
+        db.close()
+        
     if click.type == "ads":
         profile_id = await db.query(Ads.profile_id).filter(Ads.id == click.ads_id).first()
+        db.close()
+        
     if click.type == "banner":
         profile_id = await db.query(Images.profile_id).filter(Images.id == click.ads_id).first()
+        db.close()
+        
     if click.type == "popup":
-        profile_id = await db.query(PopUp.profile_id).filter(PopUp.id == click.ads_id).first()
+        rofile_id = await db.query(PopUp.profile_id).filter(PopUp.id == click.ads_id).first()
+        db.close()
+        
     new_add = Ads2Profile_count(
         ads_id      = click.ads_id,
         profile_id  = profile_id["profile_id"],
@@ -1062,6 +1134,8 @@ async def create_click_count(db: Session, click: ViewCountSchema):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
+    
     if new_add:
         return True
     else:
@@ -1073,6 +1147,8 @@ async def create_app_visitors(db: Session):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
+    
     if new_add:
         return True
     else:
@@ -1085,43 +1161,62 @@ async def create_like_dislike(db: Session, like: LikeDislikeSchema):
             db.query(Posts).filter(Posts.id == like.id)\
             .update({Posts.like : Posts.like + 1}, synchronize_session=False)
             db.commit()
+            db.close()
+            
             if like.type == True:
                 get_dislike = db.query(Posts.dislike).filter(Posts.id == like.id).first()
+                db.close()
+                
                 if get_dislike.dislike > 0:
                     db.query(Posts).filter(Posts.id == like.id)\
                     .update({Posts.dislike : Posts.dislike - 1}, synchronize_session=False)
                     db.commit()
+                    db.close()    
         else:
             db.query(Posts).filter(Posts.id == like.id)\
             .update({Posts.dislike : Posts.dislike + 1}, synchronize_session=False)
             db.commit()
+            db.close()
             if like.type == True:
                 get_dislike = db.query(Posts.like).filter(Posts.id == like.id).first()
+                db.close()
                 if get_dislike.like > 0:
                     db.query(Posts).filter(Posts.id == like.id)\
                     .update({Posts.like : Posts.like - 1}, synchronize_session=False)
                     db.commit()   
+                    db.close()
     else:
         if like.column_type == "like":
             db.query(Profiles).filter(Profiles.id == like.id)\
             .update({Profiles.like : Profiles.like + 1}, synchronize_session=False)
             db.commit()
+            db.close()
+            
             if like.type == True:
                 get_dislike = db.query(Profiles.dislike).filter(Profiles.id == like.id).first()
+                db.close()
+                
                 if get_dislike.dislike > 0:
                     db.query(Profiles).filter(Profiles.id == like.id)\
                     .update({Profiles.dislike : Profiles.dislike - 1}, synchronize_session=False)
                     db.commit()
+                    db.close()
         else:
             db.query(Profiles).filter(Profiles.id == like.id)\
             .update({Profiles.dislike : Profiles.dislike + 1}, synchronize_session=False)
             db.commit()
+            db.close()
+            
             if like.type == True:
                 get_dislike = db.query(Profiles.like).filter(Profiles.id == like.id).first()
+                db.close()
+                
                 if get_dislike.like > 0:
                     db.query(Profiles).filter(Profiles.id == like.id)\
                     .update({Profiles.like : Profiles.like - 1}, synchronize_session=False)
                     db.commit()            
+                    db.close()
+                    
     return True
 
 
@@ -1153,6 +1248,8 @@ async def update_ticket_status(db: Session, id, ticket: TicketStatusUpdateSchema
         TicketBron.status : ticket.status
     }, synchronize_session=False)
     db.commit()
+    db.close()
+    
     if new_update:
         return True
     else:
@@ -1177,6 +1274,8 @@ async def read_user_info(db: Session, user_id):
     result = result.filter(CardUsers.status == 1)
     result = result.filter(func.date(CardUsers.expired) >= datetime.now().date())
     result = result.distinct().all()
+    db.close()
+    
     if result:
         return result
     else:
@@ -1190,6 +1289,8 @@ async def read_admin_notif_token_by_cinema_id(db: Session, cinema_id):
     )\
     .filter(Admin.id == cinema_id)\
     .first()
+    db.close()
+    
     if result:
         return result
     else:
