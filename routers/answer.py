@@ -8,6 +8,8 @@ from models import CreateInbox, SendUserIsReadSchema
 
 answers_router = APIRouter()
 
+
+
 @answers_router.get("/answers", dependencies=[Depends(HTTPBearer())])
 async def get_answers(header_param: Request, db: Session = Depends(get_db)):
     user_id = await crud.read_user_id_from_token(db=db, header_param=header_param)
