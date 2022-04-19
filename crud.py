@@ -186,7 +186,7 @@ async def read_promotions(db: Session, page):
     for res in result:
         res_dict = dict(res)
         phone_numbers = await read_phone_numbers_by_profile_id(db=db, profile_id=res.profile_id)
-        res_dict["numbers"] = list(phone_numbers)
+        res_dict["numbers"] = phone_numbers
         new_list.append(res_dict)
     result = new_list
     if result:
