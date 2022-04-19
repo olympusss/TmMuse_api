@@ -12,12 +12,7 @@ card_router = APIRouter()
     
 @card_router.get("/get-card-promotion")
 async def get_card_promotion(limit: int, page: int, db: Session = Depends(get_db)):
-    # result = get_routes_from_cache(key='card')
-    # if result:
-    #     return Returns.object(result)
-    
     result = await crud.read_profile_card_promotion(db=db, limit=limit, page=page)
-    # set_routes_to_cache(key='card', value=result)
     if result:
         return Returns.object(result)
     else:
