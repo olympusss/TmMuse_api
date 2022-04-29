@@ -7,7 +7,8 @@ load_dotenv()
 bind = "0.0.0.0:3000"
 
 # workers = multiprocessing.cpu_count () * 2 + 1
-workers = 1
+# !!! socket isletmek un worker 1 bolmaly
+workers = 1 
 debug = os.environ.get("debug", "false") == "true"
 keepalive = 120
 timeout = 120
