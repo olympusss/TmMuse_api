@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from starlette.responses import HTMLResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from typing import List
 from db import Base, engine
@@ -16,9 +16,8 @@ from routers import search_router
 from routers import ticket_router
 from routers import view_count_router
 from routers import users_router
-import uvicorn
 
-app = FastAPI(debug=True)
+app = FastAPI()
 
 origins = ["*"]
 methods = ["*"]
@@ -32,6 +31,22 @@ app.add_middleware(
     allow_headers=headers,
 )
 
+
+Base.metadata.create_all(engine)
+app.include_router(authentication_router   , tags=["Authentication"])
+app.include_router(users_router            , tags=["Users"])
+app.include_router(interest_router         , tags=["Interest"])
+app.include_router(home_router             , tags=["Home"])
+app.include_router(profile_router          , tags=["Profile"])
+app.include_router(category_router         , tags=["Category"])
+app.include_router(answers_router          , tags=["Answer"])
+app.include_router(card_router             , tags=["Card"])
+app.include_router(constant_router         , tags=["Constant"])
+app.include_router(search_router           , tags=["Search"])
+app.include_router(ticket_router           , tags=["Ticket"])
+app.include_router(view_count_router       , tags=["Click_View"])
+
+    
 html = """
 <!DOCTYPE html>
 <html>
@@ -66,10 +81,12 @@ html = """
 </html>
 """
 
+
 @app.get("/websocket")
 async def get():
     return HTMLResponse(html)
-  
+
+
 class Notifier:
     def __init__(self):
         self.connections: List[WebSocket] = []
@@ -124,23 +141,3 @@ async def push_to_connected_websockets(message: str):
 async def startup():
     # Prime the push notification generator
     await notifier.generator.asend(None)
-
-
-Base.metadata.create_all(engine)
-app.include_router(authentication_router   , tags=["Authentication"])
-app.include_router(users_router            , tags=["Users"])
-app.include_router(interest_router         , tags=["Interest"])
-app.include_router(home_router             , tags=["Home"])
-app.include_router(profile_router          , tags=["Profile"])
-app.include_router(category_router         , tags=["Category"])
-app.include_router(answers_router          , tags=["Answer"])
-app.include_router(card_router             , tags=["Card"])
-app.include_router(constant_router         , tags=["Constant"])
-app.include_router(search_router           , tags=["Search"])
-app.include_router(ticket_router           , tags=["Ticket"])
-app.include_router(view_count_router       , tags=["Click_View"])
-
-    
-       
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=3000)
