@@ -82,7 +82,7 @@ html = """
 """
 
 
-@app.get("/websocket")
+@app.get("/websocket", tags=["Websocket"])
 async def get():
     return HTMLResponse(html)
 
@@ -132,7 +132,7 @@ async def websocket_endpoint(websocket: WebSocket):
         notifier.remove(websocket)
 
 
-@app.get("/push/{message}")
+@app.get("/push/{message}", tags=["Websocket"])
 async def push_to_connected_websockets(message: str):
     await notifier.push(f"! Push notification: {message} !")
 
