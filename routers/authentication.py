@@ -16,7 +16,7 @@ async def phone_verification(req: PhoneVerify, db: Session = Depends(get_db)):
     generated_code = random.randint(1000, 9999)
     result = await crud.create_number_socket(db=db, number=req, code=generated_code)
     data = f'{req.phone_number},{generated_code}'
-    await main.notifier.push(data)
+    await main.socket_manager.emit('onMessage', data)
     if result:
         return Returns.INSERTED
     else:

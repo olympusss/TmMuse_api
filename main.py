@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from starlette.websockets import WebSocket, WebSocketDisconnect
+from typing import List
 from db import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 from routers import authentication_router
@@ -14,9 +17,6 @@ from routers import ticket_router
 from routers import view_count_router
 from routers import users_router
 import uvicorn
-from typing import List
-from starlette.responses import HTMLResponse
-from starlette.websockets import WebSocket, WebSocketDisconnect
 
 app = FastAPI(debug=True)
 
@@ -31,8 +31,6 @@ app.add_middleware(
     allow_methods=methods,
     allow_headers=headers,
 )
-
-
 
 html = """
 <!DOCTYPE html>
@@ -68,12 +66,10 @@ html = """
 </html>
 """
 
-
-@app.get("/")
+@app.get("/websocket")
 async def get():
     return HTMLResponse(html)
-
-
+  
 class Notifier:
     def __init__(self):
         self.connections: List[WebSocket] = []
@@ -97,6 +93,8 @@ class Notifier:
     async def _notify(self, message: str):
         living_connections = []
         while len(self.connections) > 0:
+            # Looping like this is necessary in case a disconnection is handled
+            # during await websocket.send_text(message)
             websocket = self.connections.pop()
             await websocket.send_text(message)
             living_connections.append(websocket)
@@ -126,9 +124,6 @@ async def push_to_connected_websockets(message: str):
 async def startup():
     # Prime the push notification generator
     await notifier.generator.asend(None)
-
-notifier = Notifier()
-
 
 
 Base.metadata.create_all(engine)
