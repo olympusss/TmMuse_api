@@ -17,7 +17,9 @@ from routers import ticket_router
 from routers import view_count_router
 from routers import users_router
 
-app = FastAPI()
+app = FastAPI(
+    title='TmMuse Mobile API'
+)
 
 origins = ["*"]
 methods = ["*"]
