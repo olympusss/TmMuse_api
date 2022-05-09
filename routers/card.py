@@ -5,8 +5,7 @@ from db import get_db
 from tokens import Returns
 import crud
 from models import CreateCardUsers
-import json
-
+from cloud_messaging.cloud_messaging import send_to_topic
 card_router = APIRouter()
 
     
@@ -48,6 +47,8 @@ async def create_card_user(header_param: Request, req: CreateCardUsers, db: Sess
     new_send_user = await crud.create_send_user(db=db, userID=user_id, inboxID=inbox_id["id"])
     if not new_send_user:
         return Returns.NOT_INSERTED
+    
+    await send_to_topic(topic="new_card", title=new_dict["title"], body=new_dict["message"])
     
     if new_send_user:
         return Returns.INSERTED
