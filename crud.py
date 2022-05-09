@@ -663,8 +663,8 @@ async def read_constant_by_type(db: Session, type):
     
 async def create_inbox(db: Session, req: CreateInbox):
     new_add = Inbox(
-        title   = req.title,
-        message = req.message,
+        title   = req["title"],
+        message = req["message"],
         is_all  = False
     )
     db.add(new_add)
@@ -1295,3 +1295,16 @@ async def read_admin_notif_token_by_cinema_id(db: Session, cinema_id):
         return result
     else:
         return None
+    
+async def read_current_user(db: Session, user_id):
+    result = db.query(
+        Users.id,
+        Users.fullname,
+        Users.phone_number
+    )
+    result = result.filter(Users.id == user_id).first()
+    if result:
+        return result
+    else:
+        return None
+    
