@@ -143,7 +143,8 @@ async def read_movies(db: Session):
         Profiles.short_descRU,
         Profiles.created_at,
         Profiles.updated_at
-    ).filter(Profiles.category_id == 2).order_by(desc(Profiles.created_at)).limit(20).all()
+    ).filter(and_(Profiles.category_id == 2, Profiles.status != 0))\
+        .order_by(desc(Profiles.created_at)).limit(20).all()
     db.close()
     new_list = []
     for res in result:
@@ -591,6 +592,7 @@ async def read_profile_card_promotion(db: Session, limit, page):
         Profiles.site
     )
     result = result.filter(Profiles.tm_muse_card > 0)
+    result = result.filter(Profiles.status != 0)
     result = result.order_by(desc(Profiles.updated_at))
     result = result.offset(limit * (page - 1)).limit(limit).all()
     db.close()
