@@ -19,7 +19,6 @@ from datetime import datetime
 from translation import translation2TM, translation2RU
 import random
 from datetime import datetime
-import json
 
 async def read_all_users(db: Session):
     result = db.query(
@@ -666,20 +665,6 @@ async def read_constant_by_type(db: Session, type):
     
 async def create_inbox(db: Session, req: CreateInbox):
     new_add = Inbox(
-        title   = req.title,
-        message = req.message,
-        is_all  = False
-    )
-    db.add(new_add)
-    db.commit()
-    db.refresh(new_add)
-    if new_add:
-        return True
-    else:
-        return None
-    
-async def create_inbox_card(db: Session, req: CreateInbox):
-    new_add = Inbox(
         title   = req["title"],
         message = req["message"],
         is_all  = False
@@ -687,6 +672,7 @@ async def create_inbox_card(db: Session, req: CreateInbox):
     db.add(new_add)
     db.commit()
     db.refresh(new_add)
+    db.close()
     if new_add:
         return True
     else:

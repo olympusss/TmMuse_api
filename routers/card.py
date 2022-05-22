@@ -1,4 +1,3 @@
-import json
 from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
@@ -7,8 +6,6 @@ from tokens import Returns
 import crud
 from models import CreateCardUsers
 from cloud_messaging.cloud_messaging import send_to_topic
-import json
-
 card_router = APIRouter()
 
     
@@ -38,8 +35,8 @@ async def create_card_user(header_param: Request, req: CreateCardUsers, db: Sess
         "title"     : "Täze kart sargyt edildi / Заказана новая карточка",
         "message"   : f"{user['fullname']} müşderi täze kart sargyt etdi / Пользователь {user['fullname']} заказал новую карточку"
     }
-  
-    new_inbox = await crud.create_inbox_card(db=db, req=new_dict)
+    
+    new_inbox = await crud.create_inbox(db=db, req=new_dict)
     if not new_inbox:
         return Returns.NOT_INSERTED
     
