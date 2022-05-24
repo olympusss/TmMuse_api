@@ -36,21 +36,23 @@ async def create_card_user(header_param: Request, req: CreateCardUsers, db: Sess
         "message"   : f"{user['fullname']} müşderi täze kart sargyt etdi / Пользователь {user['fullname']} заказал новую карточку"
     }
     
-    new_inbox = await crud.create_inbox(db=db, req=new_dict)
+    new_inbox = await crud.create_inbox_card(db=db, req=new_dict)
     if not new_inbox:
         return Returns.NOT_INSERTED
-    
-    inbox_id = await crud.read_inbox_by_title_and_message(db=db, title=new_dict["title"], message=new_dict["message"])
-    if not inbox_id:
-        return Returns.NULL
-    
-    new_send_user = await crud.create_send_user(db=db, userID=user_id, inboxID=inbox_id["id"])
-    if not new_send_user:
-        return Returns.NOT_INSERTED
-    
-    await send_to_topic(topic="new_card", title=new_dict["title"], body=new_dict["message"])
-    
-    if new_send_user:
-        return Returns.INSERTED
     else:
-        return Returns.NOT_INSERTED
+        return new_inbox
+    
+    # inbox_id = await crud.read_inbox_by_title_and_message(db=db, title=new_dict["title"], message=new_dict["message"])
+    # if not inbox_id:
+    #     return Returns.NULL
+    
+    # new_send_user = await crud.create_send_user(db=db, userID=user_id, inboxID=inbox_id["id"])
+    # if not new_send_user:
+    #     return Returns.NOT_INSERTED
+    
+    # await send_to_topic(topic="new_card", title=new_dict["title"], body=new_dict["message"])
+    
+    # if new_send_user:
+    #     return Returns.INSERTED
+    # else:
+    #     return Returns.NOT_INSERTED

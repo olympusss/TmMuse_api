@@ -665,8 +665,8 @@ async def read_constant_by_type(db: Session, type):
     
 async def create_inbox(db: Session, req: CreateInbox):
     new_add = Inbox(
-        title   = req["title"],
-        message = req["message"],
+        title   = req.title,
+        message = req.message,
         is_all  = False
     )
     db.add(new_add)
@@ -677,6 +677,23 @@ async def create_inbox(db: Session, req: CreateInbox):
         return True
     else:
         return None
+    
+    
+async def create_inbox_card(db: Session, req):
+    new_add = Inbox(
+        title   = req["title"],
+        message = req["message"],
+        is_all  = False
+    )
+    db.add(new_add)
+    db.commit()
+    db.refresh(new_add)
+    db.close()
+    if new_add:
+        return new_add
+    else:
+        return None
+    
     
 async def read_inbox_by_title_and_message(db: Session, title, message):
     result = db.query(Inbox.id).filter(and_(Inbox.title == title, Inbox.message == message)).first()
